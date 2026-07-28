@@ -1,2 +1,2 @@
 # SOLUM
-Repositório para a organização dos arquivos e componentes da API principalmente.
+Repositório para a organização dos arquivos e componentes do projeto.
