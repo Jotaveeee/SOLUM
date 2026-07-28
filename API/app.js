@@ -17,7 +17,13 @@ app.use(express.json());
 
 app.use(passport.initialize());
 
-// Rotas
+//Rotas
+app.get('/healthz', (req, res) => {
+    res.status(200).json({
+        status: "API funcionando"
+    });
+});
+
 app.use("/auth", authRoutes);
 
 app.use("/devices", deviceRoutes);
