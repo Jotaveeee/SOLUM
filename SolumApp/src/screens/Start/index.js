@@ -40,10 +40,12 @@ export default function Welcome() {
       <View style={styles.container2}>
 
         <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Entrar</Text>
+          <Text style={styles.buttonText3}>Entrar</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity 
+        style={styles.button}
+        disabled={true}>
           <Text style={styles.buttonText}>Criar conta</Text>
         </TouchableOpacity>
 

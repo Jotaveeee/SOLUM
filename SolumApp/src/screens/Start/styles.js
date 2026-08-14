@@ -70,12 +70,16 @@ export default StyleSheet.create({
   },
   buttonText: {
     color: '#000000',
-    fontFamily: fontNames.bold,
+    fontFamily: fontNames.regular,
   },
   buttonText2: {
     color: '#E1E6E2',
     fontFamily: fontNames.bold,
     fontSize: 30,
+  },
+  buttonText3: {
+    color: '#000',
+    fontFamily: fontNames.bold,
   },
   input: {
     width: 350,
