@@ -15,7 +15,7 @@ import * as Font from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from "@react-navigation/native";
 
-export default function Start() {
+export default function Register() {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
@@ -64,16 +64,16 @@ export default function Start() {
           {/* Botões */}
           <View style={styles.container2}>
 
-            <TouchableOpacity style={[styles.button, styles.buttonDisabled]}
-            disabled={true}
-            >
-              <Text style={styles.buttonText}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.replace('Start')}>
+              <Text style={styles.buttonText3}>
                 Entrar
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigation.replace('Register')}>
-              <Text style={styles.buttonText3}>
+            <TouchableOpacity style={[styles.button, styles.buttonDisabled]}
+            disabled={true}
+            >
+              <Text style={styles.buttonText}>
                 Criar conta
               </Text>
             </TouchableOpacity>
