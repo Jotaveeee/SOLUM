@@ -71,7 +71,7 @@ export default function Register() {
             </TouchableOpacity>
 
             <TouchableOpacity style={[styles.button, styles.buttonDisabled]}
-            disabled={true}
+              disabled={true}
             >
               <Text style={styles.buttonText}>
                 Criar conta
@@ -82,6 +82,30 @@ export default function Register() {
 
           {/* Formulário */}
           <View style={styles.container3}>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.subtitulo}>
+                Nome
+              </Text>
+
+              <TextInput
+                style={styles.input}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.subtitulo}>
+                Fazenda
+              </Text>
+
+              <TextInput
+                style={styles.input}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.subtitulo}>
@@ -117,19 +141,6 @@ export default function Register() {
                 </Text>
               </TouchableOpacity>
             </LinearGradient>
-
-            {/* Recuperar senha */}
-            <View style={styles.container4}>
-              <Text style={styles.rodape}>
-                Esqueceu a senha?
-              </Text>
-
-              <TouchableOpacity>
-                <Text style={styles.rodape2}>
-                  Recuperar senha
-                </Text>
-              </TouchableOpacity>
-            </View>
 
           </View>
 
