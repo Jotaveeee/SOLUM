@@ -10,14 +10,17 @@ import {
 } from 'react-native';
 
 import styles, { fontNames } from './styles';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as Font from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from "@react-navigation/native";
 
-export default function Start() {
+export default function Recover() {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [code, setCode] = useState(['', '', '', '']);
+
+  const inputs = useRef([]);
 
   useEffect(() => {
     async function loadFonts() {
@@ -40,6 +43,20 @@ export default function Start() {
     return <ActivityIndicator />;
   }
 
+  const handleChange = (text, index) => {
+    // Remove tudo que não for número
+    const number = text.replace(/[^0-9]/g, '');
+
+    const newCode = [...code];
+    newCode[index] = number;
+    setCode(newCode);
+
+    // Se digitou um número, vai para o próximo campo
+    if (number && index < 3) {
+      inputs.current[index + 1]?.focus();
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.keyboard}
@@ -56,54 +73,43 @@ export default function Start() {
             resizeMode="contain"
           />
 
-          {/* Título */}
-          <Text style={styles.titulo}>
-            Bem Vindo de volta!
-          </Text>
+          {/* Informações do email */}
+          <View style={styles.emailInfo}>
+            <Text style={styles.subtitulo}>
+              Código enviado para o email
+            </Text>
 
-          {/* Botões */}
-          <View style={styles.container2}>
-
-            <TouchableOpacity style={[styles.button, styles.buttonDisabled]}
-            disabled={true}
-            >
-              <Text style={styles.buttonText}>
-                Entrar
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.button} onPress={() => navigation.replace('Register')}>
-              <Text style={styles.buttonText3}>
-                Criar conta
-              </Text>
-            </TouchableOpacity>
-
+            <Text style={styles.subtitulo}>
+              'email cadastrado'
+            </Text>
           </View>
 
           {/* Formulário */}
           <View style={styles.container3}>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.subtitulo}>
-                Email
+
+              {/* Título */}
+              <Text style={styles.codeTitle}>
+                Verifique seu email
               </Text>
 
-              <TextInput
-                style={styles.input}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
+              {/* Campos do código */}
+              <View style={styles.codeContainer}>
+                {code.map((digit, index) => (
+                  <TextInput
+                    key={index}
+                    ref={(ref) => (inputs.current[index] = ref)}
+                    style={styles.input}
+                    value={digit}
+                    onChangeText={(text) => handleChange(text, index)}
+                    keyboardType="number-pad"
+                    maxLength={1}
+                    selectTextOnFocus
+                  />
+                ))}
+              </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.subtitulo}>
-                Senha
-              </Text>
-
-              <TextInput
-                style={styles.input}
-                secureTextEntry
-              />
             </View>
 
             {/* Botão ENTRAR */}
@@ -118,19 +124,15 @@ export default function Start() {
               </TouchableOpacity>
             </LinearGradient>
 
-            {/* Recuperar senha */}
-            <View style={styles.container4}>
-              <Text style={styles.rodape}>
-                Esqueceu a senha?
+            {/* Botão VOLTAR */}
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.replace('Start')}
+            >
+              <Text style={styles.backButtonText}>
+                VOLTAR
               </Text>
-
-              <TouchableOpacity onPress={() => navigation.replace('Recover')}>
-                <Text style={styles.rodape2}>
-                  Recuperar senha
-                </Text>
-              </TouchableOpacity>
-            </View>
-
+            </TouchableOpacity>
           </View>
 
         </View>
@@ -138,4 +140,4 @@ export default function Start() {
       </View>
     </KeyboardAvoidingView>
   );
-}
+} 

@@ -32,7 +32,7 @@ export default StyleSheet.create({
   
     transform: [
       {
-        translateY: -85,
+        translateY: -50,
       },
     ],
   },
@@ -174,27 +174,4 @@ export default StyleSheet.create({
     fontSize: 26,
   },
 
-  /*
-   * RECUPERAR SENHA
-   */
-  container4: {
-    flexDirection: 'row',
-
-    justifyContent: 'center',
-    alignItems: 'center',
-
-    gap: 5,
-
-    marginTop: 12,
-  },
-
-  rodape: {
-    fontFamily: fontNames.regular,
-  },
-
-  rodape2: {
-    fontFamily: fontNames.bold,
-
-    color: '#0F760A',
-  },
 });

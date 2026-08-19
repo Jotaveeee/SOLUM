@@ -85,7 +85,7 @@ export default function Register() {
 
             <View style={styles.inputGroup}>
               <Text style={styles.subtitulo}>
-                Nome
+                Nome completo
               </Text>
 
               <TextInput
@@ -137,7 +137,7 @@ export default function Register() {
             >
               <TouchableOpacity style={styles.button2}>
                 <Text style={styles.buttonText2}>
-                  ENTRAR
+                  ENTRAR →
                 </Text>
               </TouchableOpacity>
             </LinearGradient>
