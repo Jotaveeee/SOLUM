@@ -64,16 +64,16 @@ export default function Start() {
           {/* Botões */}
           <View style={styles.container2}>
 
-            <TouchableOpacity style={[styles.button, styles.buttonDisabled]}
+            <TouchableOpacity style={styles.button}
             disabled={true}
             >
-              <Text style={styles.buttonText}>
+              <Text style={styles.buttonText3}>
                 Entrar
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigation.replace('Register')}>
-              <Text style={styles.buttonText3}>
+            <TouchableOpacity style={[styles.button, styles.buttonDisabled]} onPress={() => navigation.replace('Register')}>
+              <Text style={styles.buttonText}>
                 Criar conta
               </Text>
             </TouchableOpacity>

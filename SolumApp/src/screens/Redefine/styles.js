@@ -12,23 +12,29 @@ export default StyleSheet.create({
 
   container: {
     flex: 1,
+
     backgroundColor: '#f0f0f0',
 
     alignItems: 'center',
+    justifyContent: 'center',
 
     paddingHorizontal: 20,
   },
 
   /*
-   * CONTEÚDO PRINCIPAL
+   * CONTENT ORGANIZADO
    */
   content: {
     width: '100%',
     maxWidth: 400,
-
+  
     alignItems: 'center',
-
-    paddingTop: 110,
+  
+    transform: [
+      {
+        translateY: -60,
+      },
+    ],
   },
 
   /*
@@ -36,54 +42,16 @@ export default StyleSheet.create({
    */
   logo: {
     width: 170,
-    height: 180,
+    height: 200,
 
-    marginBottom: 15,
+    marginBottom: -20,
   },
 
   /*
-   * INFORMAÇÕES DO EMAIL
+   * TÍTULO
    */
-  emailInfo: {
-    width: '100%',
-
-    alignItems: 'center',
-
-    gap: 8,
-
-    marginBottom: 60,
-  },
-
-  subtitulo: {
-    fontSize: 15,
-
-    fontFamily: fontNames.bold,
-
-    textAlign: 'center',
-  },
-
-  /*
-   * FORMULÁRIO
-   */
-  container3: {
-    width: '100%',
-
-    alignItems: 'center',
-  },
-
-  inputGroup: {
-    width: '100%',
-
-    alignItems: 'center',
-
-    marginBottom: 55,
-  },
-
-  /*
-   * TÍTULO DO CÓDIGO
-   */
-  codeTitle: {
-    fontSize: 15,
+  titulo: {
+    fontSize: 24,
 
     fontFamily: fontNames.bold,
 
@@ -93,46 +61,51 @@ export default StyleSheet.create({
   },
 
   /*
-   * CAMPOS DO CÓDIGO
+   * FORMULÁRIO
    */
-  codeContainer: {
+  container3: {
     width: '100%',
 
-    flexDirection: 'row',
-
-    justifyContent: 'center',
-    alignItems: 'center',
-
-    gap: 20,
+    gap: 12,
   },
 
-  input: {
-    width: 47,
-    height: 58,
+  inputGroup: {
+    width: '100%',
 
-    borderRadius: 15,
+    gap: 5,
+  },
 
-    backgroundColor: '#e2e2e2',
-
-    textAlign: 'center',
-
-    fontSize: 24,
+  subtitulo: {
+    fontSize: 15,
 
     fontFamily: fontNames.bold,
 
-    color: '#000',
+    marginLeft: 15,
+  },
 
-    padding: 0,
+  input: {
+    width: '100%',
+    height: 45,
+
+    borderRadius: 90,
+
+    backgroundColor: '#e2e2e2',
+
+    paddingHorizontal: 20,
+
+    fontFamily: fontNames.regular,
   },
 
   /*
-   * BOTÃO
+   * BOTÃO CONFIRMAR
    */
   gradiente: {
     width: '100%',
-    height: 63,
+    height: 65,
 
     borderRadius: 25,
+
+    marginTop: 50,
 
     overflow: 'hidden',
   },
@@ -149,7 +122,7 @@ export default StyleSheet.create({
 
     fontFamily: fontNames.bold,
 
-    fontSize: 24,
+    fontSize: 26,
   },
   backButton: {
   width: '100%',

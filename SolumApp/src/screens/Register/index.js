@@ -64,16 +64,16 @@ export default function Register() {
           {/* Botões */}
           <View style={styles.container2}>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigation.replace('Start')}>
-              <Text style={styles.buttonText3}>
+            <TouchableOpacity style={[styles.button, styles.buttonDisabled]} onPress={() => navigation.replace('Start')}>
+              <Text style={styles.buttonText}>
                 Entrar
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.button, styles.buttonDisabled]}
+            <TouchableOpacity style={styles.button}
               disabled={true}
             >
-              <Text style={styles.buttonText}>
+              <Text style={styles.buttonText3}>
                 Criar conta
               </Text>
             </TouchableOpacity>

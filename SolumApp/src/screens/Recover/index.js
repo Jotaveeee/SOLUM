@@ -57,6 +57,20 @@ export default function Recover() {
     }
   };
 
+  const handleKeyPress = ({ nativeEvent }, index) => {
+  if (nativeEvent.key === 'Backspace') {
+    // Se o campo atual estiver vazio, volta para o anterior
+    if (code[index] === '' && index > 0) {
+      const newCode = [...code];
+
+      newCode[index - 1] = '';
+      setCode(newCode);
+
+      inputs.current[index - 1]?.focus();
+    }
+  }
+};
+
   return (
     <KeyboardAvoidingView
       style={styles.keyboard}
@@ -103,6 +117,7 @@ export default function Recover() {
                     style={styles.input}
                     value={digit}
                     onChangeText={(text) => handleChange(text, index)}
+                    onKeyPress={(event) => handleKeyPress(event, index)}
                     keyboardType="number-pad"
                     maxLength={1}
                     selectTextOnFocus
@@ -117,9 +132,9 @@ export default function Recover() {
               colors={['#249057', '#53BE70']}
               style={styles.gradiente}
             >
-              <TouchableOpacity style={styles.button2}>
+              <TouchableOpacity style={styles.button2} onPress={() => navigation.replace('Redefine')}>
                 <Text style={styles.buttonText2}>
-                  ENTRAR →
+                  VERIFICAR
                 </Text>
               </TouchableOpacity>
             </LinearGradient>
