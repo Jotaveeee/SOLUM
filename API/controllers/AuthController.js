@@ -18,6 +18,7 @@ class AuthController {
         return {
             id: usuario._id,
             nome: usuario.nome,
+            Fazenda: usuario.Fazenda,
             email: usuario.email
         };
     }
@@ -30,7 +31,7 @@ class AuthController {
     async register(req, res) {
         try {
 
-            const { nome, email, senha } = req.body;
+            const { nome, Fazenda, email, senha } = req.body;
 
             if (!nome || !email || !senha) {
                 return res.status(400).json({
@@ -56,6 +57,7 @@ class AuthController {
 
             const usuario = await Usuario.create({
                 nome,
+                Fazenda,
                 email,
                 senha: senhaHash
             });

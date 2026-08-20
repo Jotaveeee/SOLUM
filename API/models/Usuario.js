@@ -6,6 +6,10 @@ const UsuarioSchema = new mongoose.Schema({
         required: true
     },
 
+    Fazenda: {
+        type: String,
+        required: true
+    },
     email: {
         type: String,
         required: true,
