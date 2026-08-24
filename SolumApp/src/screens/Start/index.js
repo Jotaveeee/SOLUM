@@ -111,7 +111,7 @@ export default function Start() {
               colors={['#249057', '#53BE70']}
               style={styles.gradiente}
             >
-              <TouchableOpacity style={styles.button2}>
+              <TouchableOpacity style={styles.button2} onPress={() => navigation.replace('MainTabs')}>
                 <Text style={styles.buttonText2}>
                   ENTRAR →
                 </Text>

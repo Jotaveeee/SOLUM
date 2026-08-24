@@ -94,19 +94,7 @@ export default function Register() {
                 autoCapitalize="none"
               />
             </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.subtitulo}>
-                Fazenda
-              </Text>
-
-              <TextInput
-                style={styles.input}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
-
+            
             <View style={styles.inputGroup}>
               <Text style={styles.subtitulo}>
                 Email
