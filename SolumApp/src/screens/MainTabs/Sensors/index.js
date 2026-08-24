@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 export default function Start() {
   return (
     <View>
-      <Text>Olá Iago!</Text>
+      <Text>Cavalo de Troia</Text>
     </View>
   );
 }
