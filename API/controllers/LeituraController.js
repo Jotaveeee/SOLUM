@@ -3,6 +3,7 @@ const Leitura = require("../models/Leitura");
 
 class LeituraController {
 
+    // ESP32 envia uma leitura
     async create(req, res) {
 
         try {
@@ -15,6 +16,7 @@ class LeituraController {
                 bateria
             } = req.body;
 
+            // Verifica se todos os dados foram enviados
             if (
                 !deviceId ||
                 !apiKey ||
@@ -27,6 +29,7 @@ class LeituraController {
                 });
             }
 
+            // Procura o dispositivo
             const dispositivo = await Dispositivo.findOne({
                 deviceId
             });
@@ -37,22 +40,26 @@ class LeituraController {
                 });
             }
 
+            // Verifica se o dispositivo está ativo
             if (!dispositivo.ativo) {
                 return res.status(403).json({
                     message: "Dispositivo desativado."
                 });
             }
 
+            // Verifica a API Key
             if (dispositivo.apiKey !== apiKey) {
                 return res.status(401).json({
                     message: "API Key inválida."
                 });
             }
 
+            // Atualiza a última conexão
             dispositivo.ultimaConexao = new Date();
 
             await dispositivo.save();
 
+            // Salva a leitura vinculada ao dispositivo
             const leitura = await Leitura.create({
                 dispositivo: dispositivo._id,
                 temperatura,
@@ -72,11 +79,47 @@ class LeituraController {
             return res.status(500).json({
                 message: "Erro interno do servidor."
             });
-
         }
-
     }
 
+
+    // Aplicativo busca as leituras
+    async me(req, res) {
+
+        try {
+
+            // Busca todos os dispositivos do usuário logado
+            const dispositivos = await Dispositivo.find({
+                usuario: req.user._id
+            });
+
+            // Pega somente os IDs dos dispositivos
+            const dispositivosIds = dispositivos.map(
+                dispositivo => dispositivo._id
+            );
+
+            // Busca as leituras desses dispositivos
+            const leituras = await Leitura.find({
+                dispositivo: {
+                    $in: dispositivosIds
+                }
+            }).sort({
+                createdAt: -1
+            });
+
+            return res.status(200).json({
+                leituras
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            return res.status(500).json({
+                message: "Erro interno do servidor."
+            });
+        }
+    }
 }
 
 module.exports = new LeituraController();

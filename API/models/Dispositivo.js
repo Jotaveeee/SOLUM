@@ -7,23 +7,24 @@ const DispositivoSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-
     apiKey: {
         type: String,
         required: true,
         unique: true
     },
-
+    fazenda: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Fazenda",
+        required: true
+    },
     usuario: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Usuario"
     },
-
     vinculado: {
         type: Boolean,
         default: false
     },
-
     ativo: {
         type: Boolean,
         default: true
@@ -33,12 +34,10 @@ const DispositivoSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
-
     versaoFirmware: {
         type: String,
         default: "1.0.0"
     },
-
     modelo: {
         type: String,
         default: "ESP32 Solo V1"

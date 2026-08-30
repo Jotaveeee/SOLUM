@@ -1,4 +1,5 @@
 const Usuario = require("../models/Usuario");
+
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -18,7 +19,6 @@ class AuthController {
         return {
             id: usuario._id,
             nome: usuario.nome,
-            Fazenda: usuario.Fazenda,
             email: usuario.email
         };
     }
@@ -31,7 +31,7 @@ class AuthController {
     async register(req, res) {
         try {
 
-            const { nome, Fazenda, email, senha } = req.body;
+            const { nome, email, senha } = req.body;
 
             if (!nome || !email || !senha) {
                 return res.status(400).json({
@@ -57,7 +57,6 @@ class AuthController {
 
             const usuario = await Usuario.create({
                 nome,
-                Fazenda,
                 email,
                 senha: senhaHash
             });
@@ -77,7 +76,6 @@ class AuthController {
             return res.status(500).json({
                 message: "Erro interno do servidor."
             });
-
         }
     }
 
@@ -132,18 +130,14 @@ class AuthController {
             return res.status(500).json({
                 message: "Erro interno do servidor."
             });
-
         }
     }
 
     async me(req, res) {
-
         return res.status(200).json({
             usuario: this.formatarUsuario(req.user)
         });
-
     }
-
 }
 
 module.exports = new AuthController();
