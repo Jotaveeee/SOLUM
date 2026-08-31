@@ -29,9 +29,9 @@ class AuthController {
     }
 
     validarEmail(email) {
-        const emailRegex = /\S+@\S+\.\S+/;
-        return emailRegex.test(email);
-    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    return emailRegex.test(email);
+}
 
     async register(req, res) {
 
