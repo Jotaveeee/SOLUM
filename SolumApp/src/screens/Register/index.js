@@ -60,96 +60,96 @@ export default function Register() {
     return <ActivityIndicator />;
   }
 
-async function cadastrarUsuario() {
+  async function cadastrarUsuario() {
 
-  if (!nome.trim() || !email.trim() || !senha.trim()) {
-
-    Alert.alert(
-      'Atenção',
-      'Preencha todos os campos.'
-    );
-
-    return;
-  }
-
-  if (senha.length < 8) {
-
-    Alert.alert(
-      'Senha inválida',
-      'A senha deve ter no mínimo 8 caracteres.'
-    );
-
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-
-    const response = await fetch(
-      `${API_URL}/auth/register`,
-      {
-        method: 'POST',
-
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-
-        body: JSON.stringify({
-          nome: nome.trim(),
-          email: email.trim(),
-          senha: senha,
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
+    if (!nome.trim() || !email.trim() || !senha.trim()) {
 
       Alert.alert(
-        'Erro',
-        data.message || 'Erro ao cadastrar usuário.'
+        'Atenção',
+        'Preencha todos os campos.'
       );
 
       return;
     }
 
-    Alert.alert(
-      'Sucesso',
-      'Usuário cadastrado com sucesso!',
-      [
+    if (senha.length < 8) {
+
+      Alert.alert(
+        'Senha inválida',
+        'A senha deve ter no mínimo 8 caracteres.'
+      );
+
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+
+      const response = await fetch(
+        `${API_URL}/auth/register`,
         {
-          text: 'OK',
-          onPress: () => navigation.replace('Start'),
-        },
-      ]
-    );
+          method: 'POST',
 
-  } catch (error) {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
 
-    console.error(
-      'Erro ao cadastrar usuário:',
-      error
-    );
+          body: JSON.stringify({
+            nome: nome.trim(),
+            email: email.trim(),
+            senha: senha,
+          }),
+        }
+      );
 
-    Alert.alert(
-      'Erro',
-      'Não foi possível conectar à API.'
-    );
+      const data = await response.json();
 
-  } finally {
+      if (!response.ok) {
 
-    setLoading(false);
+        Alert.alert(
+          'Erro',
+          data.message || 'Erro ao cadastrar usuário.'
+        );
 
+        return;
+      }
+
+      Alert.alert(
+        'Sucesso',
+        'Usuário cadastrado com sucesso!',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.replace('MainTabs'),
+          },
+        ]
+      );
+
+    } catch (error) {
+
+      console.error(
+        'Erro ao cadastrar usuário:',
+        error
+      );
+
+      Alert.alert(
+        'Erro',
+        'Não foi possível conectar à API.'
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
   }
-}
 
   return (
     <KeyboardAvoidingView
       style={styles.keyboard}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
 
       <View style={styles.container}>
@@ -204,7 +204,9 @@ async function cadastrarUsuario() {
               <TextInput
                 style={styles.input}
                 value={nome}
-                onChangeText={setNome}
+                onChangeText={(texto) =>
+                  setNome(texto.replace(/[^a-zA-ZÀ-ÿ\s]/g, ''))
+                }
                 placeholder="Digite seu nome"
                 autoCapitalize="words"
                 autoCorrect={false}

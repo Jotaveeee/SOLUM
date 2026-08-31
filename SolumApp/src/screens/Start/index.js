@@ -7,6 +7,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 
 import styles, { fontNames } from './styles';
@@ -14,10 +15,15 @@ import { useState, useEffect } from 'react';
 import * as Font from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from "@react-navigation/native";
+import { API_URL } from '../../services/api';
+import * as SecureStore from 'expo-secure-store';
 
 export default function Start() {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadFonts() {
@@ -40,10 +46,86 @@ export default function Start() {
     return <ActivityIndicator />;
   }
 
+  async function fazerLogin() {
+
+    if (!email.trim() || !senha.trim()) {
+
+      Alert.alert(
+        'Atenção',
+        'Informe o e-mail e a senha.'
+      );
+
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+
+      const response = await fetch(
+        `${API_URL}/auth/login`,
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+
+          body: JSON.stringify({
+            email: email.trim(),
+            senha: senha,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+
+        Alert.alert(
+          'Erro',
+          data.message || 'E-mail ou senha inválidos.'
+        );
+
+        return;
+      }
+
+      await SecureStore.setItemAsync(
+        'token',
+        data.token
+      );
+
+      await SecureStore.setItemAsync(
+        'usuario',
+        JSON.stringify(data.usuario)
+      );
+
+      navigation.replace('MainTabs');
+
+    } catch (error) {
+
+      console.error(
+        'Erro ao fazer login:',
+        error
+      );
+
+      Alert.alert(
+        'Erro',
+        'Não foi possível conectar à API.'
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
+  }
+
   return (
     <KeyboardAvoidingView
       style={styles.keyboard}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.container}>
 
@@ -65,7 +147,7 @@ export default function Start() {
           <View style={styles.container2}>
 
             <TouchableOpacity style={styles.button}
-            disabled={true}
+              disabled={true}
             >
               <Text style={styles.buttonText3}>
                 Entrar
@@ -90,8 +172,14 @@ export default function Start() {
 
               <TextInput
                 style={styles.input}
+                value={email}
+                onChangeText={(texto) =>
+                  setEmail(texto.replace(/\s/g, ''))
+                }
+                placeholder="Digite seu email"
                 keyboardType="email-address"
                 autoCapitalize="none"
+                autoCorrect={false}
               />
             </View>
 
@@ -102,7 +190,14 @@ export default function Start() {
 
               <TextInput
                 style={styles.input}
+                value={senha}
+                onChangeText={(texto) =>
+                  setSenha(texto.replace(/\s/g, ''))
+                }
+                placeholder="Digite sua senha"
                 secureTextEntry
+                autoCapitalize="none"
+                maxLength={20}
               />
             </View>
 
@@ -111,10 +206,18 @@ export default function Start() {
               colors={['#249057', '#53BE70']}
               style={styles.gradiente}
             >
-              <TouchableOpacity style={styles.button2} onPress={() => navigation.replace('MainTabs')}>
-                <Text style={styles.buttonText2}>
-                  ENTRAR →
-                </Text>
+              <TouchableOpacity
+                style={styles.button2}
+                onPress={fazerLogin}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.buttonText2}>
+                    ENTRAR →
+                  </Text>
+                )}
               </TouchableOpacity>
             </LinearGradient>
 
