@@ -5,15 +5,12 @@ const jwt = require("jsonwebtoken");
 class AuthController {
 
     constructor() {
-
         this.register = this.register.bind(this);
         this.login = this.login.bind(this);
         this.me = this.me.bind(this);
-
     }
 
     gerarToken(id) {
-
         return jwt.sign(
             { id },
             process.env.JWT_SECRET,
@@ -21,25 +18,19 @@ class AuthController {
                 expiresIn: "7d"
             }
         );
-
     }
 
     formatarUsuario(usuario) {
-
         return {
             id: usuario._id,
             nome: usuario.nome,
             email: usuario.email
         };
-
     }
 
     validarEmail(email) {
-
         const emailRegex = /\S+@\S+\.\S+/;
-
         return emailRegex.test(email);
-
     }
 
     async register(req, res) {
@@ -48,54 +39,69 @@ class AuthController {
 
             const { nome, email, senha } = req.body;
 
+            // Verifica campos obrigatórios
             if (!nome || !email || !senha) {
-
                 return res.status(400).json({
                     message: "Preencha todos os campos."
                 });
-
             }
 
-            if (!this.validarEmail(email)) {
+            // Não permite espaços no e-mail
+            if (/\s/.test(email)) {
+                return res.status(400).json({
+                    message: "O e-mail não pode conter espaços."
+                });
+            }
 
+            // Valida formato do e-mail
+            if (!this.validarEmail(email)) {
                 return res.status(400).json({
                     message: "E-mail inválido."
                 });
-
             }
 
+            // Não permite espaços na senha
+            if (/\s/.test(senha)) {
+                return res.status(400).json({
+                    message: "A senha não pode conter espaços."
+                });
+            }
+
+            // Senha com no mínimo 8 caracteres
+            if (senha.length < 8) {
+                return res.status(400).json({
+                    message: "A senha deve ter no mínimo 8 caracteres."
+                });
+            }
+
+            // Verifica se o e-mail já existe
             const usuarioExistente = await Usuario.findOne({
                 email
             });
 
             if (usuarioExistente) {
-
                 return res.status(409).json({
                     message: "Este e-mail já está cadastrado."
                 });
-
             }
 
+            // Criptografa a senha
             const senhaHash = await bcrypt.hash(senha, 10);
 
+            // Cria o usuário
             const usuario = await Usuario.create({
-
                 nome,
                 email,
                 senha: senhaHash
-
             });
 
+            // Gera token
             const token = this.gerarToken(usuario._id);
 
             return res.status(201).json({
-
                 message: "Usuário criado com sucesso.",
-
                 token,
-
                 usuario: this.formatarUsuario(usuario)
-
             });
 
         } catch (error) {
@@ -103,13 +109,9 @@ class AuthController {
             console.error("Erro no cadastro:", error);
 
             return res.status(500).json({
-
                 message: "Erro interno do servidor."
-
             });
-
         }
-
     }
 
     async login(req, res) {
@@ -119,19 +121,29 @@ class AuthController {
             const { email, senha } = req.body;
 
             if (!email || !senha) {
-
                 return res.status(400).json({
                     message: "Informe o e-mail e a senha."
                 });
+            }
 
+            // Não permite espaços no e-mail
+            if (/\s/.test(email)) {
+                return res.status(400).json({
+                    message: "O e-mail não pode conter espaços."
+                });
             }
 
             if (!this.validarEmail(email)) {
-
                 return res.status(400).json({
                     message: "E-mail inválido."
                 });
+            }
 
+            // Não permite espaços na senha
+            if (/\s/.test(senha)) {
+                return res.status(400).json({
+                    message: "A senha não pode conter espaços."
+                });
             }
 
             const usuario = await Usuario.findOne({
@@ -139,11 +151,9 @@ class AuthController {
             });
 
             if (!usuario) {
-
                 return res.status(401).json({
                     message: "E-mail ou senha inválidos."
                 });
-
             }
 
             const senhaValida = await bcrypt.compare(
@@ -152,23 +162,17 @@ class AuthController {
             );
 
             if (!senhaValida) {
-
                 return res.status(401).json({
                     message: "E-mail ou senha inválidos."
                 });
-
             }
 
             const token = this.gerarToken(usuario._id);
 
             return res.status(200).json({
-
                 message: "Login realizado com sucesso.",
-
                 token,
-
                 usuario: this.formatarUsuario(usuario)
-
             });
 
         } catch (error) {
@@ -176,25 +180,17 @@ class AuthController {
             console.error("Erro no login:", error);
 
             return res.status(500).json({
-
                 message: "Erro interno do servidor."
-
             });
-
         }
-
     }
 
     async me(req, res) {
 
         return res.status(200).json({
-
             usuario: this.formatarUsuario(req.user)
-
         });
-
     }
-
 }
 
 module.exports = new AuthController();

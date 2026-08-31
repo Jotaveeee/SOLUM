@@ -60,24 +60,35 @@ export default function Register() {
     return <ActivityIndicator />;
   }
 
-  async function cadastrarUsuario() {
+async function cadastrarUsuario() {
 
-    if (!nome.trim() || !email.trim() || !senha.trim()) {
-      Alert.alert('Atenção', 'Preencha todos os campos.');
-      return;
-    }
+  if (!nome.trim() || !email.trim() || !senha.trim()) {
 
-    try {
+    Alert.alert(
+      'Atenção',
+      'Preencha todos os campos.'
+    );
 
-      const url = `${API_URL}/auth/register`;
+    return;
+  }
 
-      console.log('================================');
-      console.log('URL:', url);
-      console.log('NOME:', nome);
-      console.log('EMAIL:', email);
-      console.log('================================');
+  if (senha.length < 8) {
 
-      const response = await fetch(url, {
+    Alert.alert(
+      'Senha inválida',
+      'A senha deve ter no mínimo 8 caracteres.'
+    );
+
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+
+    const response = await fetch(
+      `${API_URL}/auth/register`,
+      {
         method: 'POST',
 
         headers: {
@@ -90,64 +101,50 @@ export default function Register() {
           email: email.trim(),
           senha: senha,
         }),
-      });
-
-      console.log('STATUS:', response.status);
-      console.log('CONTENT-TYPE:', response.headers.get('content-type'));
-
-      const texto = await response.text();
-
-      console.log('RESPOSTA:', texto);
-
-      let data;
-
-      try {
-        data = JSON.parse(texto);
-      } catch (error) {
-
-        console.error(
-          'A API não retornou JSON.'
-        );
-
-        Alert.alert(
-          'Erro',
-          `O servidor retornou uma resposta inesperada. Status: ${response.status}`
-        );
-
-        return;
       }
+    );
 
-      if (!response.ok) {
+    const data = await response.json();
 
-        Alert.alert(
-          'Erro',
-          data.message || 'Erro ao cadastrar usuário.'
-        );
-
-        return;
-      }
-
-      Alert.alert(
-        'Sucesso',
-        'Usuário cadastrado com sucesso!',
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.replace('Start'),
-          },
-        ]
-      );
-
-    } catch (error) {
-
-      console.error('ERRO DE CONEXÃO:', error);
+    if (!response.ok) {
 
       Alert.alert(
         'Erro',
-        'Não foi possível conectar à API.'
+        data.message || 'Erro ao cadastrar usuário.'
       );
+
+      return;
     }
+
+    Alert.alert(
+      'Sucesso',
+      'Usuário cadastrado com sucesso!',
+      [
+        {
+          text: 'OK',
+          onPress: () => navigation.replace('Start'),
+        },
+      ]
+    );
+
+  } catch (error) {
+
+    console.error(
+      'Erro ao cadastrar usuário:',
+      error
+    );
+
+    Alert.alert(
+      'Erro',
+      'Não foi possível conectar à API.'
+    );
+
+  } finally {
+
+    setLoading(false);
+
   }
+}
 
   return (
     <KeyboardAvoidingView
@@ -201,7 +198,7 @@ export default function Register() {
             <View style={styles.inputGroup}>
 
               <Text style={styles.subtitulo}>
-                Nome completo
+                Nome
               </Text>
 
               <TextInput
@@ -211,6 +208,7 @@ export default function Register() {
                 placeholder="Digite seu nome"
                 autoCapitalize="words"
                 autoCorrect={false}
+                maxLength={20}
               />
 
             </View>
@@ -225,7 +223,7 @@ export default function Register() {
               <TextInput
                 style={styles.input}
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={(texto) => setEmail(texto.replace(/\s/g, ''))}
                 placeholder="Digite seu email"
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -244,10 +242,11 @@ export default function Register() {
               <TextInput
                 style={styles.input}
                 value={senha}
-                onChangeText={setSenha}
+                onChangeText={(texto) => setSenha(texto.replace(/\s/g, ''))}
                 placeholder="Digite sua senha"
                 secureTextEntry
                 autoCapitalize="none"
+                maxLength={20}
               />
 
             </View>
