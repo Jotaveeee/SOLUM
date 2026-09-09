@@ -9,39 +9,16 @@ import {
   Platform,
 } from 'react-native';
 
-import styles, { fontNames } from './styles';
-import { useState, useEffect, useRef } from 'react';
-import * as Font from 'expo-font';
+import styles from './styles';
+import { useState, useRef } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from "@react-navigation/native";
 
 export default function Recover() {
   const navigation = useNavigation();
-  const [fontsLoaded, setFontsLoaded] = useState(false);
   const [code, setCode] = useState(['', '', '', '']);
 
   const inputs = useRef([]);
-
-  useEffect(() => {
-    async function loadFonts() {
-      try {
-        await Font.loadAsync({
-          [fontNames.regular]: require('../../assets/fonts/PlusJakartaSans-Regular.ttf'),
-          [fontNames.bold]: require('../../assets/fonts/PlusJakartaSans-Bold.ttf'),
-        });
-
-        setFontsLoaded(true);
-      } catch (error) {
-        console.error('Erro ao carregar fontes:', error);
-      }
-    }
-
-    loadFonts();
-  }, []);
-
-  if (!fontsLoaded) {
-    return <ActivityIndicator />;
-  }
 
   const handleChange = (text, index) => {
     // Remove tudo que não for número

@@ -9,36 +9,13 @@ import {
     Platform,
 } from 'react-native';
 
-import styles, { fontNames } from './styles';
-import { useState, useEffect } from 'react';
-import * as Font from 'expo-font';
+import styles from './styles';
+import { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from "@react-navigation/native";
 
 export default function Redefine() {
     const navigation = useNavigation();
-    const [fontsLoaded, setFontsLoaded] = useState(false);
-
-    useEffect(() => {
-        async function loadFonts() {
-            try {
-                await Font.loadAsync({
-                    [fontNames.regular]: require('../../assets/fonts/PlusJakartaSans-Regular.ttf'),
-                    [fontNames.bold]: require('../../assets/fonts/PlusJakartaSans-Bold.ttf'),
-                });
-
-                setFontsLoaded(true);
-            } catch (error) {
-                console.error('Erro ao carregar fontes:', error);
-            }
-        }
-
-        loadFonts();
-    }, []);
-
-    if (!fontsLoaded) {
-        return <ActivityIndicator />;
-    }
 
     return (
         <KeyboardAvoidingView

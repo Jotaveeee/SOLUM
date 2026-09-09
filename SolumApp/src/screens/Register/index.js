@@ -10,9 +10,8 @@ import {
   Alert,
 } from 'react-native';
 
-import styles, { fontNames } from './styles';
-import { useState, useEffect } from 'react';
-import * as Font from 'expo-font';
+import styles from './styles';
+import { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 
@@ -22,8 +21,6 @@ export default function Register() {
 
   const navigation = useNavigation();
 
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-
   // Dados do formulário
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -31,34 +28,6 @@ export default function Register() {
 
   // Estado para o botão enquanto cadastra
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-
-    async function loadFonts() {
-
-      try {
-
-        await Font.loadAsync({
-          [fontNames.regular]: require('../../assets/fonts/PlusJakartaSans-Regular.ttf'),
-          [fontNames.bold]: require('../../assets/fonts/PlusJakartaSans-Bold.ttf'),
-        });
-
-        setFontsLoaded(true);
-
-      } catch (error) {
-
-        console.error('Erro ao carregar fontes:', error);
-
-      }
-    }
-
-    loadFonts();
-
-  }, []);
-
-  if (!fontsLoaded) {
-    return <ActivityIndicator />;
-  }
 
   async function cadastrarUsuario() {
 

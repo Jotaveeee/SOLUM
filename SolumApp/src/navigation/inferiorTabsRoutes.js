@@ -1,10 +1,12 @@
-import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Start from '../screens/MainTabs/Start';
-import Sensors from '../screens/MainTabs/Sensors';
+import Farms from '../screens/MainTabs/Farms';
+import Support from '../screens/MainTabs/Support';
+import Profile from '../screens/MainTabs/Profile';
+import Alarms from '../screens/MainTabs/Alarms';
 
 import { styles, colors } from './MainTabs.styles';
 
@@ -37,18 +39,35 @@ export default function MainTabs() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'Start') {
+          if (route.name === 'Inicio') {
             iconName = focused
               ? 'home'
               : 'home-outline';
           }
 
-          if (route.name === 'Sensors') {
+          if (route.name === 'Fazendas') {
             iconName = focused
-              ? 'speedometer'
-              : 'speedometer-outline';
+              ? 'leaf'
+              : 'leaf-outline';
           }
 
+          if (route.name === 'Suporte') {
+            iconName = focused
+              ? 'help-circle'
+              : 'help-circle-outline';
+          }
+
+          if (route.name === 'Perfil') {
+            iconName = focused
+              ? 'person'
+              : 'person-outline';
+          }
+
+          if (route.name === 'Alarmes') {
+            iconName = focused
+              ? 'notifications'
+              : 'notifications-outline';
+          }
           return (
             <Ionicons
               name={iconName}
@@ -60,13 +79,28 @@ export default function MainTabs() {
       })}
     >
       <Tab.Screen
-        name="Start"
+        name="Inicio"
         component={Start}
       />
 
       <Tab.Screen
-        name="Sensors"
-        component={Sensors}
+        name="Fazendas"
+        component={Farms}
+      />
+
+      <Tab.Screen
+        name="Alarmes"
+        component={Alarms}
+      />
+
+      <Tab.Screen
+        name="Perfil"
+        component={Profile}
+      />
+
+      <Tab.Screen
+        name="Suporte"
+        component={Support}
       />
     </Tab.Navigator>
   );
