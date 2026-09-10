@@ -302,4 +302,102 @@ export default StyleSheet.create({
     fontSize: 18,
   },
 
+  
+  listaAnexos: {
+    marginTop: 10,
+    gap: 8,
+  },
+
+  anexoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: '#1E1E1E',
+  },
+
+  anexoNome: {
+    flex: 1,
+    color: '#FFF',
+    marginRight: 10,
+  },
+
+  anexoRemover: {
+    color: '#FF5555',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+
+  anexoQuantidade: {
+    marginTop: 8,
+    color: '#999',
+    fontSize: 12,
+  },
+
+  modalOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0, 0, 0, 0.55)',
+  justifyContent: 'flex-end',
+},
+
+modalOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0, 0, 0, 0.25)',
+  justifyContent: 'flex-end',
+},
+
+modalContainer: {
+  backgroundColor: '#FFFFFF',
+  borderTopLeftRadius: 24,
+  borderTopRightRadius: 24,
+  padding: 24,
+  paddingBottom: 30,
+},
+
+modalTitulo: {
+  color: '#1A1A1A',
+  fontSize: 20,
+  fontWeight: '700',
+  marginBottom: 6,
+},
+
+modalDescricao: {
+  color: '#777777',
+  fontSize: 14,
+  marginBottom: 20,
+},
+
+modalOpcao: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  paddingVertical: 16,
+  borderBottomWidth: 1,
+  borderBottomColor: '#E8E8E8',
+},
+
+modalIcone: {
+  width: 40,
+},
+
+modalTexto: {
+  color: '#1A1A1A',
+  fontSize: 16,
+  fontWeight: '500',
+},
+
+modalCancelar: {
+  alignItems: 'center',
+  marginTop: 18,
+  paddingVertical: 14,
+  borderRadius: 12,
+  backgroundColor: '#249057',
+},
+
+modalCancelarTexto: {
+  color: '#FFFFFF',
+  fontSize: 15,
+  fontWeight: '600',
+},
 });
