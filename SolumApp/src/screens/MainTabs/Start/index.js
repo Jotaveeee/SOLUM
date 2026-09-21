@@ -7,28 +7,15 @@ import {
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from "@react-navigation/native";
 
 import styles from './styles';
 
-export default function HomeScreen() {
+export default function Start() {
+  const navigation = useNavigation();
   const fazendas = [
-    { id: 1, nome: 'Fazenda São José' },
-    { id: 2, nome: 'Fazenda Boa Vista' },
-    { id: 3, nome: 'Fazenda Esperança' },
-    { id: 4, nome: 'Fazenda Santa Clara' },
-    { id: 5, nome: 'Fazenda Bela Vista' },
-    { id: 6, nome: 'Fazenda Nova Esperança' },
-    { id: 7, nome: 'Fazenda São Pedro' },
-    { id: 8, nome: 'Fazenda do Vale' },
-    { id: 9, nome: 'Fazenda Primavera' },
-    { id: 10, nome: 'Fazenda Boa Água' },
-    { id: 11, nome: 'Fazenda Recanto' },
-    { id: 12, nome: 'Fazenda Horizonte' },
   ];
 
-  const criarFazenda = () => {
-    console.log('Criar fazenda');
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -71,10 +58,10 @@ export default function HomeScreen() {
 
           <TouchableOpacity
             style={styles.criarButton}
-            onPress={criarFazenda}
+            onPress={() => navigation.replace('NewFazenda')}
           >
             <Text style={styles.criarButtonText}>
-              + Criar fazenda
+              Criar fazenda
             </Text>
           </TouchableOpacity>
         </View>

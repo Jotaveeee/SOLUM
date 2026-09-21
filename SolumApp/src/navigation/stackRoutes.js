@@ -4,7 +4,9 @@ import Start from '../screens/Start';
 import Register from '../screens/Register';
 import Recover from '../screens/Recover';
 import Redefine from '../screens/Redefine';
+import NewFazenda from '../screens/NewFazenda';
 import inferiorTabsRoutes from './inferiorTabsRoutes';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -20,7 +22,8 @@ export default function StackRoutes() {
             <Stack.Screen name='Register' component={Register}/>
             <Stack.Screen name='Recover' component={Recover}/>
             <Stack.Screen name='Redefine' component={Redefine}/>
-            <Stack.Screen name='MainTabs' component={inferiorTabsRoutes}/>    
+            <Stack.Screen name='MainTabs' component={inferiorTabsRoutes}/>  
+            <Stack.Screen name='NewFazenda' component={NewFazenda}/>  
         </Stack.Navigator>
     );
 }
