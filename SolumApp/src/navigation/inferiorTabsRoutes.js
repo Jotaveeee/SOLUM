@@ -3,7 +3,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Start from '../screens/MainTabs/Start';
-import Farms from '../screens/MainTabs/Farms';
 import Support from '../screens/MainTabs/Support';
 import Profile from '../screens/MainTabs/Profile';
 import Alarms from '../screens/MainTabs/Alarms';
@@ -45,12 +44,6 @@ export default function MainTabs() {
               : 'home-outline';
           }
 
-          if (route.name === 'Fazendas') {
-            iconName = focused
-              ? 'leaf'
-              : 'leaf-outline';
-          }
-
           if (route.name === 'Suporte') {
             iconName = focused
               ? 'help-circle'
@@ -81,11 +74,6 @@ export default function MainTabs() {
       <Tab.Screen
         name="Inicio"
         component={Start}
-      />
-
-      <Tab.Screen
-        name="Fazendas"
-        component={Farms}
       />
 
       <Tab.Screen

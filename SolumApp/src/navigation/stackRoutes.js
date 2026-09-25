@@ -5,6 +5,7 @@ import Register from '../screens/Register';
 import Recover from '../screens/Recover';
 import Redefine from '../screens/Redefine';
 import NewFazenda from '../screens/NewFazenda';
+import Sensors from '../screens/Sensors';
 import inferiorTabsRoutes from './inferiorTabsRoutes';
 
 
@@ -24,6 +25,7 @@ export default function StackRoutes() {
             <Stack.Screen name='Redefine' component={Redefine}/>
             <Stack.Screen name='MainTabs' component={inferiorTabsRoutes}/>  
             <Stack.Screen name='NewFazenda' component={NewFazenda}/>  
+            <Stack.Screen name='Sensors' component={Sensors}/>
         </Stack.Navigator>
     );
 }
