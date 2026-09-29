@@ -140,7 +140,7 @@ class DeviceController {
 
             const dispositivos = await Dispositivo.find({
                 usuario: req.user._id
-            });
+            }).populate('fazenda', 'nome');
 
             if (dispositivos.length === 0) {
 
