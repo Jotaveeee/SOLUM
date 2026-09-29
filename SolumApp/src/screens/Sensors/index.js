@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-  SafeAreaView,
   View,
   Text,
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './styles';
 
 export default function SensoresScreen({ navigation }) {
@@ -89,7 +89,14 @@ export default function SensoresScreen({ navigation }) {
 
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation?.goBack?.()}
+            onPress={() => {
+              navigation.navigate('MainTabs');
+              // if (navigation?.canGoBack?.()) {
+              //   navigation.goBack();
+              // } else {
+              //   navigation.navigate('MainTabs'); 
+              // }
+            }}
             activeOpacity={0.7}
           >
             <Text style={styles.backIcon}>‹</Text>
