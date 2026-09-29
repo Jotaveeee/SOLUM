@@ -1,5 +1,6 @@
 const Dispositivo = require("../models/Dispositivo");
 const Fazenda = require("../models/Fazenda");
+const crypto = require("crypto");
 
 class DeviceController {
 
@@ -14,6 +15,55 @@ class DeviceController {
         };
     }
 
+    // Cria um dispositivo NOVO, já vinculado à fazenda do usuário
+    async criar(req, res) {
+        try {
+            const { deviceId, fazendaNome } = req.body;
+            const usuario = req.user;
+
+            if (!deviceId) {
+                return res.status(400).json({ message: "Informe o Device ID." });
+            }
+
+            // Verifica se o usuário já tem uma fazenda; se não, cria uma
+            let fazenda = await Fazenda.findOne({ usuario: usuario._id });
+
+            if (!fazenda) {
+                fazenda = await Fazenda.create({
+                    nome: fazendaNome || "Minha Fazenda",
+                    usuario: usuario._id
+                });
+            }
+
+            // Verifica se o deviceId já existe
+            const existente = await Dispositivo.findOne({ deviceId });
+            if (existente) {
+                return res.status(409).json({ message: "Este Device ID já existe." });
+            }
+
+            const apiKey = crypto.randomBytes(16).toString("hex");
+
+            const dispositivo = await Dispositivo.create({
+                deviceId,
+                apiKey,
+                fazenda: fazenda._id,
+                usuario: usuario._id,
+                vinculado: true,
+                ativo: true
+            });
+
+            return res.status(201).json({
+                message: "Dispositivo criado com sucesso.",
+                dispositivo: this.formatarDispositivo(dispositivo),
+                apiKey
+            });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Erro interno do servidor." });
+        }
+    }
+
     async register(req, res) {
 
         try {
@@ -22,7 +72,6 @@ class DeviceController {
 
             const usuario = req.user;
 
-            // Verifica se os dados foram enviados
             if (!deviceId || !fazendaId) {
 
                 return res.status(400).json({
@@ -30,7 +79,6 @@ class DeviceController {
                 });
             }
 
-            // Verifica se a fazenda existe
             const fazenda = await Fazenda.findOne({
                 _id: fazendaId,
                 usuario: usuario._id
@@ -43,7 +91,6 @@ class DeviceController {
                 });
             }
 
-            // Procura o dispositivo
             const dispositivo = await Dispositivo.findOne({
                 deviceId
             });
@@ -55,7 +102,6 @@ class DeviceController {
                 });
             }
 
-            // Verifica se já está vinculado
             if (dispositivo.vinculado) {
 
                 return res.status(409).json({
@@ -63,12 +109,8 @@ class DeviceController {
                 });
             }
 
-            // Vincula ao usuário
             dispositivo.usuario = usuario._id;
-
-            // Vincula à fazenda
             dispositivo.fazenda = fazenda._id;
-
             dispositivo.vinculado = true;
 
             await dispositivo.save();

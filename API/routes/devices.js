@@ -1,12 +1,16 @@
 const express = require("express");
-
 const passport = require("passport");
-
 const router = express.Router();
-
 const DeviceController = require("../controllers/DeviceController");
 
-// Vincular dispositivo a uma fazenda
+// Cria um novo dispositivo, já vinculado à fazenda do usuário
+router.post(
+    "/criar",
+    passport.authenticate("jwt", { session: false }),
+    DeviceController.criar
+);
+
+// Vincular dispositivo já existente a uma fazenda
 router.post(
     "/",
     passport.authenticate("jwt", { session: false }),
