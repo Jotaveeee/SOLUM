@@ -1,60 +1,98 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  SafeAreaView,
   View,
   Text,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as SecureStore from 'expo-secure-store';
+import { API_URL } from '../../services/api';
 import styles from './styles';
 
 export default function SensoresScreen({ navigation }) {
-  const prototipos = [
-    {
-      id: 1,
-      nome: 'Protótipo 01',
-      local: 'Talhão 01',
-      status: 'Normal',
-      umidade: '68%',
-      temperatura: '27°C',
-    },
-    {
-      id: 2,
-      nome: 'Protótipo 02',
-      local: 'Talhão 02',
-      status: 'Normal',
-      umidade: '74%',
-      temperatura: '25°C',
-    },
-    {
-      id: 3,
-      nome: 'Protótipo 03',
-      local: 'Talhão 03',
-      status: 'Atenção',
-      umidade: '32%',
-      temperatura: '31°C',
-    },
-    {
-      id: 4,
-      nome: 'Protótipo 04',
-      local: 'Talhão 04',
-      status: 'Alerta máximo',
-      umidade: '18%',
-      temperatura: '36°C',
-    },
-  ];
+  const [dispositivos, setDispositivos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(null);
 
-  const abrirDetalhes = (prototipo) => {
-    console.log('Detalhes do protótipo:', prototipo);
-
-    // Exemplo:
-    // navigation.navigate('DetalhesPrototipo', { prototipo });
+  // Define o status com base na umidade do solo
+  const calcularStatus = (umidade) => {
+    if (umidade === null || umidade === undefined) return 'Normal';
+    if (umidade < 20) return 'Alerta máximo';
+    if (umidade < 40) return 'Atenção';
+    return 'Normal';
   };
 
-  /*
-   * Define as cores de acordo com o status
-   */
+  const carregarDados = async () => {
+    try {
+      const token = await SecureStore.getItemAsync('token');
+
+      if (!token) {
+        setErro('Você precisa estar logado.');
+        setLoading(false);
+        return;
+      }
+
+      const headers = { Authorization: `Bearer ${token}` };
+
+      // Busca os dispositivos e as leituras em paralelo
+      const [respDispositivos, respLeituras] = await Promise.all([
+        fetch(`${API_URL}/devices/me`, { headers }),
+        fetch(`${API_URL}/leituras/me`, { headers }),
+      ]);
+
+      const dataDispositivos = await respDispositivos.json();
+      const dataLeituras = await respLeituras.json();
+
+      if (!respDispositivos.ok) {
+        // Nenhum dispositivo cadastrado ainda não é bem um "erro"
+        setDispositivos([]);
+        setErro(null);
+        return;
+      }
+
+      const leituras = respLeituras.ok ? dataLeituras.leituras : [];
+
+      // Para cada dispositivo, acha a leitura mais recente dele
+      const listaCompleta = dataDispositivos.dispositivos.map((dispositivo) => {
+        const leituraMaisRecente = leituras.find(
+          (leitura) => leitura.dispositivo === dispositivo.id
+        );
+
+        return {
+          id: dispositivo.id,
+          nome: dispositivo.deviceId,
+          local: dispositivo.fazenda?.nome || 'Sem fazenda',
+          umidade: leituraMaisRecente ? `${leituraMaisRecente.umidadeSolo}%` : '--',
+          temperatura: leituraMaisRecente ? `${leituraMaisRecente.temperatura}°C` : '--',
+          status: calcularStatus(leituraMaisRecente?.umidadeSolo),
+        };
+      });
+
+      setDispositivos(listaCompleta);
+      setErro(null);
+
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      setErro('Não foi possível conectar à API.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    carregarDados();
+    const interval = setInterval(carregarDados, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const abrirDetalhes = (dispositivo) => {
+    console.log('Detalhes do dispositivo:', dispositivo);
+    // navigation.navigate('DetalhesPrototipo', { dispositivo });
+  };
+
   const getStatusStyles = (status) => {
     switch (status) {
       case 'Alerta máximo':
@@ -63,14 +101,12 @@ export default function SensoresScreen({ navigation }) {
           statusText: styles.statusTextAlertaMaximo,
           bolinha: styles.bolinhaAlertaMaximo,
         };
-
       case 'Atenção':
         return {
           status: styles.statusAtencao,
           statusText: styles.statusTextAtencao,
           bolinha: styles.bolinhaAtencao,
         };
-
       default:
         return {
           status: styles.statusNormal,
@@ -84,156 +120,100 @@ export default function SensoresScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
 
-        {/* CABEÇALHO */}
         <View style={styles.header}>
-
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation?.goBack?.()}
+            onPress={() => navigation.navigate('MainTabs')}
             activeOpacity={0.7}
           >
             <Text style={styles.backIcon}>‹</Text>
           </TouchableOpacity>
 
           <View style={styles.headerText}>
-            <Text
-              style={styles.fazendaNome}
-              numberOfLines={1}
-            >
-              Fazenda Boa Esperança
+            <Text style={styles.fazendaNome} numberOfLines={1}>
+              {dispositivos[0]?.local || 'Minha Fazenda'}
             </Text>
           </View>
-
         </View>
 
-        {/* TÍTULO */}
         <View style={styles.titleContainer}>
-          <Text style={styles.titulo}>
-            Protótipos
-          </Text>
-
+          <Text style={styles.titulo}>Protótipos</Text>
           <Text style={styles.subtitulo}>
             Acompanhe os dados dos sensores instalados na fazenda
           </Text>
         </View>
 
-        {/* LISTA */}
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {prototipos.map((prototipo) => {
-            const statusStyles = getStatusStyles(prototipo.status);
+        {loading ? (
+          <ActivityIndicator size="large" style={{ marginTop: 40 }} />
+        ) : erro ? (
+          <Text style={{ textAlign: 'center', marginTop: 40, color: 'red' }}>
+            {erro}
+          </Text>
+        ) : dispositivos.length === 0 ? (
+          <Text style={{ textAlign: 'center', marginTop: 40 }}>
+            Nenhum dispositivo cadastrado ainda.
+          </Text>
+        ) : (
+          <ScrollView
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {dispositivos.map((dispositivo) => {
+              const statusStyles = getStatusStyles(dispositivo.status);
 
-            return (
-              <View
-                key={prototipo.id}
-                style={styles.card}
-              >
+              return (
+                <View key={dispositivo.id} style={styles.card}>
+                  <View style={styles.cardHeader}>
+                    <View style={[styles.sensorIcon, statusStyles.bolinha]}>
+                      <Text style={styles.sensorIconText}>●</Text>
+                    </View>
 
-                {/* CABEÇALHO DO CARD */}
-                <View style={styles.cardHeader}>
+                    <View style={styles.sensorTitleContainer}>
+                      <Text style={styles.sensorNome} numberOfLines={1}>
+                        {dispositivo.nome}
+                      </Text>
+                      <Text style={styles.sensorTipo} numberOfLines={1}>
+                        {dispositivo.local}
+                      </Text>
+                    </View>
 
-                  {/* BOLINHA DE STATUS */}
-                  <View
-                    style={[
-                      styles.sensorIcon,
-                      statusStyles.bolinha,
-                    ]}
+                    <View style={[styles.status, statusStyles.status]}>
+                      <Text style={[styles.statusText, statusStyles.statusText]}>
+                        {dispositivo.status}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.sensorDataContainer}>
+                    <View style={styles.dataItem}>
+                      <Text style={styles.dataLabel}>Umidade atual</Text>
+                      <Text style={styles.dataValue}>{dispositivo.umidade}</Text>
+                    </View>
+
+                    <View style={styles.divider} />
+
+                    <View style={styles.dataItem}>
+                      <Text style={styles.dataLabel}>Temperatura atual</Text>
+                      <Text style={styles.dataValue}>{dispositivo.temperatura}</Text>
+                    </View>
+                  </View>
+
+                  <TouchableOpacity
+                    style={styles.detailsButton}
+                    onPress={() => abrirDetalhes(dispositivo)}
+                    activeOpacity={0.8}
                   >
-                    <Text style={styles.sensorIconText}>
-                      ●
-                    </Text>
-                  </View>
-
-                  {/* NOME DO PROTÓTIPO */}
-                  <View style={styles.sensorTitleContainer}>
-                    <Text
-                      style={styles.sensorNome}
-                      numberOfLines={1}
-                    >
-                      {prototipo.nome}
-                    </Text>
-
-                    <Text
-                      style={styles.sensorTipo}
-                      numberOfLines={1}
-                    >
-                      {prototipo.local}
-                    </Text>
-                  </View>
-
-                  {/* STATUS */}
-                  <View
-                    style={[
-                      styles.status,
-                      statusStyles.status,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.statusText,
-                        statusStyles.statusText,
-                      ]}
-                    >
-                      {prototipo.status}
-                    </Text>
-                  </View>
-
+                    <Text style={styles.detailsButtonText}>Ver detalhes</Text>
+                    <Text style={styles.arrow}>→</Text>
+                  </TouchableOpacity>
                 </View>
+              );
+            })}
 
-                {/* DADOS DOS SENSORES */}
-                <View style={styles.sensorDataContainer}>
-
-                  {/* UMIDADE */}
-                  <View style={styles.dataItem}>
-                    <Text style={styles.dataLabel}>
-                      Umidade atual
-                    </Text>
-
-                    <Text style={styles.dataValue}>
-                      {prototipo.umidade}
-                    </Text>
-                  </View>
-
-                  <View style={styles.divider} />
-
-                  {/* TEMPERATURA */}
-                  <View style={styles.dataItem}>
-                    <Text style={styles.dataLabel}>
-                      Temperatura atual
-                    </Text>
-
-                    <Text style={styles.dataValue}>
-                      {prototipo.temperatura}
-                    </Text>
-                  </View>
-
-                </View>
-
-                {/* BOTÃO */}
-                <TouchableOpacity
-                  style={styles.detailsButton}
-                  onPress={() => abrirDetalhes(prototipo)}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.detailsButtonText}>
-                    Ver detalhes
-                  </Text>
-
-                  <Text style={styles.arrow}>
-                    →
-                  </Text>
-                </TouchableOpacity>
-
-              </View>
-            );
-          })}
-
-          <View style={styles.bottomSpace} />
-        </ScrollView>
-
+            <View style={styles.bottomSpace} />
+          </ScrollView>
+        )}
       </View>
     </SafeAreaView>
   );
