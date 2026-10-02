@@ -14,7 +14,7 @@ passport.use(
 
         try {
 
-            const usuario = await Usuario.findById(payload.id);
+            const usuario = await mongoose.model("Usuario").findById(payload.id);
 
             if (!usuario) {
                 return done(null, false);
