@@ -5,16 +5,6 @@ const DeviceController = require("../controllers/DeviceController");
 
 // Cria um novo dispositivo, já vinculado à fazenda do usuário
 router.post(
-    "/",
-    (req, res, next) => {
-        console.log("AUTH:", req.headers.authorization);
-        next();
-    },
-    passport.authenticate("jwt", { session: false }),
-    DeviceController.criar
-);
-
-router.post(
     "/criar",
     passport.authenticate("jwt", { session: false }),
     (req, res) => DeviceController.criar(req, res)

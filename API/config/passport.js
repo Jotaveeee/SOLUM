@@ -14,8 +14,7 @@ passport.use(
 
         try {
             
-            console.log("PAYLOAD JWT:", payload);
-            const usuario = await mongoose.model("Usuario").findById(payload.id);
+            const usuario = await Usuario.findById(payload.id);
 
             if (!usuario) {
                 return done(null, false);
