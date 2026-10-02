@@ -21,7 +21,7 @@ router.post(
 router.get(
     "/me",
     passport.authenticate("jwt", { session: false }),
-    DeviceController.me
+    (req, res) => DeviceController.me(req, res)
 );
 
 module.exports = router;
