@@ -7,7 +7,7 @@ const DeviceController = require("../controllers/DeviceController");
 router.post(
     "/criar",
     passport.authenticate("jwt", { session: false }),
-    DeviceController.criar
+    (req, res) => DeviceController.criar(req, res)
 );
 
 // Vincular dispositivo já existente a uma fazenda
