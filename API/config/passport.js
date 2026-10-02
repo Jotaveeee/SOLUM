@@ -13,7 +13,8 @@ passport.use(
     new JwtStrategy(options, async (payload, done) => {
 
         try {
-
+            
+            console.log("PAYLOAD JWT:", payload);
             const usuario = await mongoose.model("Usuario").findById(payload.id);
 
             if (!usuario) {
