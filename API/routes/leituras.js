@@ -16,7 +16,7 @@ router.post(
 router.get(
     "/me",
     passport.authenticate("jwt", { session: false }),
-    LeituraController.me
+    LeituraController.me    
 );
 
 module.exports = router;
