@@ -11,7 +11,7 @@ router.post(
         next();
     },
     passport.authenticate("jwt", { session: false }),
-    dispositivoController.criar
+    DeviceController.criar
 );
 
 router.post(
