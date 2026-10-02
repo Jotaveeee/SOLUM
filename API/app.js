@@ -29,5 +29,5 @@ app.use("/auth", authRoutes);
 app.use("/devices", deviceRoutes);
 
 app.use("/leituras", leituraRoutes);
-
+    
 module.exports = app;
