@@ -25,15 +25,10 @@ class DeviceController {
                 return res.status(400).json({ message: "Informe o Device ID." });
             }
 
-            // Verifica se o usuário já tem uma fazenda; se não, cria uma
-            let fazenda = await Fazenda.findOne({ usuario: usuario._id });
-
-            if (!fazenda) {
-                fazenda = await Fazenda.create({
-                    nome: fazendaNome || "Minha Fazenda",
-                    usuario: usuario._id
-                });
-            }
+            const fazenda = await Fazenda.create({
+                nome: fazendaNome || "Minha Fazenda",
+                usuario: usuario._id
+            });
 
             // Verifica se o deviceId já existe
             const existente = await Dispositivo.findOne({ deviceId });

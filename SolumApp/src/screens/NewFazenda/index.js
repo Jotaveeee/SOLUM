@@ -67,7 +67,7 @@ export default function NewFazenda() {
                 [
                     {
                         text: 'OK, copiei',
-                        onPress: () => navigation.replace('Sensors'),
+                        onPress: () => navigation.replace('Fazendas'),
                     },
                 ]
             );
@@ -117,7 +117,7 @@ export default function NewFazenda() {
 
                         <View style={styles.inputGroup}>
                             <Text style={styles.subtitulo}>
-                                Adicione um sensor
+                                Adicione seu primeiro sensor!
                             </Text>
 
                             <TextInput
@@ -163,4 +163,4 @@ export default function NewFazenda() {
             </View>
         </KeyboardAvoidingView>
     );
-}
+}   

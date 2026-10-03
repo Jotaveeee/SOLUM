@@ -85,6 +85,16 @@ export default function Register() {
         return;
       }
 
+      await SecureStore.setItemAsync(
+        'token',
+        data.token
+      );
+      
+      await SecureStore.setItemAsync(
+        'usuario',
+        JSON.stringify(data.usuario)
+      );
+
       Alert.alert(
         'Sucesso',
         'Usuário cadastrado com sucesso!',
