@@ -1,6 +1,7 @@
 const Dispositivo = require("../models/Dispositivo");
 const Fazenda = require("../models/Fazenda");
 const crypto = require("crypto");
+const mongoose = require("mongoose");
 
 class DeviceController {
 
@@ -130,35 +131,27 @@ class DeviceController {
 
 
     async me(req, res) {
-
         try {
+            const filtro = { usuario: req.user._id };
 
-            const dispositivos = await Dispositivo.find({
-                usuario: req.user._id
-            }).populate('fazenda', 'nome');
+            if (req.query.fazenda) {
 
-            if (dispositivos.length === 0) {
+                if (!mongoose.isValidObjectId(req.query.fazenda)) {
+                    return res.status(400).json({ message: "Fazenda inválida." });
+                }
 
-                return res.status(404).json({
-                    message: "Nenhum dispositivo encontrado."
-                });
+                filtro.fazenda = req.query.fazenda;
             }
 
+            const dispositivos = await Dispositivo.find(filtro).populate("fazenda", "nome");
+
             return res.status(200).json({
-
-                dispositivos: dispositivos.map(
-                    dispositivo => this.formatarDispositivo(dispositivo)
-                )
-
+                dispositivos: dispositivos.map(d => this.formatarDispositivo(d))
             });
-
+            
         } catch (error) {
-
             console.error(error);
-
-            return res.status(500).json({
-                message: "Erro interno do servidor."
-            });
+            return res.status(500).json({ message: "Erro interno do servidor." });
         }
     }
 }

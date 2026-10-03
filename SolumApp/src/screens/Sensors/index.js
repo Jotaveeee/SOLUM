@@ -11,11 +11,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
 import { API_URL } from '../../services/api';
 import styles from './styles';
+import { route } from '../../../../API/routes/devices';
 
 export default function SensoresScreen({ navigation }) {
   const [dispositivos, setDispositivos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
+
+  const { fazendaId, fazendaNome } = route.params;
 
   // Define o status com base na umidade do solo
   const calcularStatus = (umidade) => {
@@ -39,7 +42,7 @@ export default function SensoresScreen({ navigation }) {
 
       // Busca os dispositivos e as leituras em paralelo
       const [respDispositivos, respLeituras] = await Promise.all([
-        fetch(`${API_URL}/devices/me`, { headers }),
+        fetch(`${API_URL}/devices/me?fazenda=${fazendaId}`, { headers }),
         fetch(`${API_URL}/leituras/me`, { headers }),
       ]);
 
@@ -127,7 +130,7 @@ export default function SensoresScreen({ navigation }) {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation.navigate('MainTabs')}
+            onPress={() => navigation.navigate('Fazendas')}
             activeOpacity={0.7}
           >
             <Text style={styles.backIcon}>‹</Text>
