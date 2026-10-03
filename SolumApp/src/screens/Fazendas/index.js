@@ -100,6 +100,10 @@ export default function FazendasScreen({ navigation }) {
           >
             {fazendas.map((fazenda) => {
               return (
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Sensors')}
+                  activeOpacity={0.7}
+                >
                 <View key={fazenda.id} style={styles.card}>
                   <View style={styles.cardHeader}>
                     <View style={styles.sensorTitleContainer}>
@@ -112,6 +116,7 @@ export default function FazendasScreen({ navigation }) {
                     </View>
                   </View>
                 </View>
+                </TouchableOpacity>
               );
             })}
 

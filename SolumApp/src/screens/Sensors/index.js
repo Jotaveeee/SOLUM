@@ -127,7 +127,7 @@ export default function SensoresScreen({ navigation }) {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation.navigate('MainTabs')}
+            onPress={() => navigation.navigate('Fazendas')}
             activeOpacity={0.7}
           >
             <Text style={styles.backIcon}>‹</Text>
