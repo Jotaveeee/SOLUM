@@ -46,10 +46,14 @@ export default function SensoresScreen({ navigation }) {
       const dataDispositivos = await respDispositivos.json();
       const dataLeituras = await respLeituras.json();
 
-      if (!respDispositivos.ok) {
-        // Nenhum dispositivo cadastrado ainda não é bem um "erro"
+      if (respDispositivos.status === 404) {
         setDispositivos([]);
         setErro(null);
+        return;
+      }
+      
+      if (!respDispositivos.ok) {
+        setErro(dataDispositivos.message || 'Erro ao buscar dispositivos.');
         return;
       }
 
