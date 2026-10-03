@@ -117,7 +117,7 @@ export default function NewFazenda() {
 
                         <View style={styles.inputGroup}>
                             <Text style={styles.subtitulo}>
-                                Adicione um sensor
+                                Adicione seu primeiro sensor!
                             </Text>
 
                             <TextInput
