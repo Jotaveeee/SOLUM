@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -11,63 +11,40 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
 import { API_URL } from '../../services/api';
 import styles from './styles';
+import { useFocusEffect } from '@react-navigation/native';
 
-export default function SensoresScreen({ navigation }) {
+export default function FazendasScreen({ navigation }) {
   const [fazendas, setFazendas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
 
-  const carregarDados = async () => {
+  const carregarFazendas = async () => {
     try {
       const token = await SecureStore.getItemAsync('token');
 
       if (!token) {
         setErro('Você precisa estar logado.');
-        setLoading(false);
         return;
       }
 
       const headers = { Authorization: `Bearer ${token}` };
 
-      // Busca os dispositivos e as leituras em paralelo
-      const [respDispositivos, respLeituras] = await Promise.all([
-        fetch(`${API_URL}/devices/me`, { headers }),
-        fetch(`${API_URL}/leituras/me`, { headers }),
-      ]);
+      const respFazendas = await fetch(`${API_URL}/fazenda/me`, { headers });
 
-      const dataDispositivos = await respDispositivos.json();
-      const dataLeituras = await respLeituras.json();
+      const dataFazendas = await respFazendas.json();
 
-      if (respDispositivos.status === 404) {
-        setDispositivos([]);
+      if (respFazendas.status === 404) {
+        setFazendas([]);
         setErro(null);
         return;
       }
       
-      if (!respDispositivos.ok) {
-        setErro(dataDispositivos.message || 'Erro ao buscar dispositivos.');
+      if (!respFazendas.ok) {
+        setErro(dataFazendas.message || 'Erro ao buscar fazendas.');
         return;
       }
 
-      const leituras = respLeituras.ok ? dataLeituras.leituras : [];
-
-      // Para cada dispositivo, acha a leitura mais recente dele
-      const listaCompleta = dataDispositivos.dispositivos.map((dispositivo) => {
-        const leituraMaisRecente = leituras.find(
-          (leitura) => leitura.dispositivo === dispositivo.id
-        );
-
-        return {
-          id: dispositivo.id,
-          nome: dispositivo.deviceId,
-          local: dispositivo.fazenda?.nome || 'Sem fazenda',
-          umidade: leituraMaisRecente ? `${leituraMaisRecente.umidadeSolo}%` : '--',
-          temperatura: leituraMaisRecente ? `${leituraMaisRecente.temperatura}°C` : '--',
-          status: calcularStatus(leituraMaisRecente?.umidadeSolo),
-        };
-      });
-
-      setDispositivos(listaCompleta);
+      setFazendas(dataFazendas.fazendas);
       setErro(null);
 
     } catch (error) {
@@ -78,39 +55,11 @@ export default function SensoresScreen({ navigation }) {
     }
   };
 
-  useEffect(() => {
-    carregarDados();
-    const interval = setInterval(carregarDados, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const abrirDetalhes = (dispositivo) => {
-    console.log('Detalhes do dispositivo:', dispositivo);
-    // navigation.navigate('DetalhesPrototipo', { dispositivo });
-  };
-
-  const getStatusStyles = (status) => {
-    switch (status) {
-      case 'Alerta máximo':
-        return {
-          status: styles.statusAlertaMaximo,
-          statusText: styles.statusTextAlertaMaximo,
-          bolinha: styles.bolinhaAlertaMaximo,
-        };
-      case 'Atenção':
-        return {
-          status: styles.statusAtencao,
-          statusText: styles.statusTextAtencao,
-          bolinha: styles.bolinhaAtencao,
-        };
-      default:
-        return {
-          status: styles.statusNormal,
-          statusText: styles.statusTextNormal,
-          bolinha: styles.bolinhaNormal,
-        };
-    }
-  };
+  useFocusEffect(
+    useCallback(() => {
+      carregarFazendas();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -124,18 +73,12 @@ export default function SensoresScreen({ navigation }) {
           >
             <Text style={styles.backIcon}>‹</Text>
           </TouchableOpacity>
-
-          <View style={styles.headerText}>
-            <Text style={styles.fazendaNome} numberOfLines={1}>
-              {dispositivos[0]?.local || 'Minha Fazenda'}
-            </Text>
-          </View>
         </View>
 
         <View style={styles.titleContainer}>
-          <Text style={styles.titulo}>Protótipos</Text>
+          <Text style={styles.titulo}>Minhas fazendas</Text>
           <Text style={styles.subtitulo}>
-            Acompanhe os dados dos sensores instalados na fazenda
+            Acompanhe as suas fazendas!
           </Text>
         </View>
 
@@ -145,9 +88,9 @@ export default function SensoresScreen({ navigation }) {
           <Text style={{ textAlign: 'center', marginTop: 40, color: 'red' }}>
             {erro}
           </Text>
-        ) : dispositivos.length === 0 ? (
+        ) : fazendas.length === 0 ? (
           <Text style={{ textAlign: 'center', marginTop: 40 }}>
-            Nenhum dispositivo cadastrado ainda.
+            Nenhuma fazenda cadastrada ainda.
           </Text>
         ) : (
           <ScrollView
@@ -155,54 +98,19 @@ export default function SensoresScreen({ navigation }) {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            {dispositivos.map((dispositivo) => {
-              const statusStyles = getStatusStyles(dispositivo.status);
-
+            {fazendas.map((fazenda) => {
               return (
-                <View key={dispositivo.id} style={styles.card}>
+                <View key={fazenda.id} style={styles.card}>
                   <View style={styles.cardHeader}>
-                    <View style={[styles.sensorIcon, statusStyles.bolinha]}>
-                      <Text style={styles.sensorIconText}>●</Text>
-                    </View>
-
                     <View style={styles.sensorTitleContainer}>
                       <Text style={styles.sensorNome} numberOfLines={1}>
-                        {dispositivo.nome}
+                        {fazenda.nome}
                       </Text>
                       <Text style={styles.sensorTipo} numberOfLines={1}>
-                        {dispositivo.local}
-                      </Text>
-                    </View>
-
-                    <View style={[styles.status, statusStyles.status]}>
-                      <Text style={[styles.statusText, statusStyles.statusText]}>
-                        {dispositivo.status}
+                        Criada em {new Date(fazenda.createdAt).toLocaleDateString('pt-BR')}
                       </Text>
                     </View>
                   </View>
-
-                  <View style={styles.sensorDataContainer}>
-                    <View style={styles.dataItem}>
-                      <Text style={styles.dataLabel}>Umidade atual</Text>
-                      <Text style={styles.dataValue}>{dispositivo.umidade}</Text>
-                    </View>
-
-                    <View style={styles.divider} />
-
-                    <View style={styles.dataItem}>
-                      <Text style={styles.dataLabel}>Temperatura atual</Text>
-                      <Text style={styles.dataValue}>{dispositivo.temperatura}</Text>
-                    </View>
-                  </View>
-
-                  <TouchableOpacity
-                    style={styles.detailsButton}
-                    onPress={() => abrirDetalhes(dispositivo)}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={styles.detailsButtonText}>Ver detalhes</Text>
-                    <Text style={styles.arrow}>→</Text>
-                  </TouchableOpacity>
                 </View>
               );
             })}

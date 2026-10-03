@@ -67,7 +67,7 @@ export default function NewFazenda() {
                 [
                     {
                         text: 'OK, copiei',
-                        onPress: () => navigation.replace('Sensors'),
+                        onPress: () => navigation.replace('Fazendas'),
                     },
                 ]
             );
