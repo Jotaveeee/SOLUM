@@ -398,7 +398,7 @@ export default StyleSheet.create({
   /*
    * LINHA DE AÇÕES (detalhes + excluir)
    */
-  
+
   actionsRow: {
     width: '100%',
     flexDirection: 'row',
@@ -413,6 +413,105 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 10,
+  },
+
+  /*
+   * BOTÃO "+" DO CABEÇALHO
+   */
+  addButton: {
+    width: 45,
+    height: 45,
+    borderRadius: 23,
+    backgroundColor: '#249057',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 12,
+  },
+
+  addIcon: {
+    fontSize: 30,
+    lineHeight: 34,
+    color: '#ffffff',
+    fontFamily: fontNames.regular,
+  },
+
+  /*
+   * MODAL
+   */
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+
+  modalBox: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 20,
+  },
+
+  modalTitulo: {
+    fontSize: 19,
+    color: '#000000',
+    fontFamily: fontNames.bold,
+    marginBottom: 6,
+  },
+
+  modalTexto: {
+    fontSize: 13,
+    lineHeight: 19,
+    color: '#666666',
+    fontFamily: fontNames.regular,
+    marginBottom: 16,
+  },
+
+  modalInput: {
+    height: 46,
+    borderRadius: 13,
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 14,
+    fontSize: 14,
+    fontFamily: fontNames.regular,
+    color: '#000000',
+    marginBottom: 14,
+  },
+
+  apiKeyBox: {
+    fontSize: 14,
+    color: '#000000',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 13,
+    padding: 14,
+    marginBottom: 14,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+
+  modalBotaoPrimario: {
+    minHeight: 45,
+    borderRadius: 13,
+    backgroundColor: '#249057',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  modalBotaoPrimarioTexto: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontFamily: fontNames.bold,
+  },
+
+  modalBotaoSecundario: {
+    minHeight: 42,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 6,
+  },
+
+  modalBotaoSecundarioTexto: {
+    color: '#666666',
+    fontSize: 13,
+    fontFamily: fontNames.bold,
   },
 
   /*

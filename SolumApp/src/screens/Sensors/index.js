@@ -6,11 +6,16 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Modal,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
+import * as Clipboard from 'expo-clipboard';
 import { API_URL } from '../../services/api';
 import styles from './styles';
 
@@ -19,6 +24,13 @@ export default function SensoresScreen({ navigation, route }) {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
   const [excluindoId, setExcluindoId] = useState(null);
+
+  // modal de adicionar sensor
+  const [modalVisivel, setModalVisivel] = useState(false);
+  const [novoDeviceId, setNovoDeviceId] = useState('');
+  const [criando, setCriando] = useState(false);
+  const [apiKeyCriada, setApiKeyCriada] = useState(null);
+  const [copiado, setCopiado] = useState(false);
 
   const fazendaId = route.params?.fazendaId;
   const fazendaNome = route.params?.fazendaNome;
@@ -141,6 +153,79 @@ export default function SensoresScreen({ navigation, route }) {
     );
   };
 
+  // ---------- adicionar sensor ----------
+  const abrirModal = () => {
+    setNovoDeviceId('');
+    setApiKeyCriada(null);
+    setCopiado(false);
+    setModalVisivel(true);
+  };
+
+  const fecharModal = () => {
+    setModalVisivel(false);
+    setApiKeyCriada(null); // não deixa a chave guardada em memória
+    setNovoDeviceId('');
+    setCopiado(false);
+  };
+
+  const criarSensor = async () => {
+    if (criando) return;
+
+    const deviceId = novoDeviceId.trim();
+
+    if (!deviceId) {
+      Alert.alert('Atenção', 'Informe o ID do sensor.');
+      return;
+    }
+
+    setCriando(true);
+
+    try {
+      const token = await SecureStore.getItemAsync('token');
+      if (!token) {
+        Alert.alert('Erro', 'Você precisa estar logado.');
+        return;
+      }
+
+      const resp = await fetch(`${API_URL}/devices/criar`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ deviceId, fazendaId }),
+      });
+
+      const data = await resp.json().catch(() => ({}));
+
+      if (!resp.ok) {
+        Alert.alert(
+          'Erro',
+          data.message || `Não foi possível criar o sensor (HTTP ${resp.status}).`
+        );
+        return;
+      }
+
+      if (!data.apiKey) {
+        Alert.alert('Erro', 'Resposta inesperada da API.');
+        return;
+      }
+
+      setApiKeyCriada(data.apiKey); // troca o modal para o estado de sucesso
+      carregarDados();              // o sensor novo já aparece na lista atrás
+    } catch (error) {
+      console.error('Erro ao criar sensor:', error);
+      Alert.alert('Erro', 'Não foi possível conectar à API.');
+    } finally {
+      setCriando(false);
+    }
+  };
+
+  const copiarChave = async () => {
+    await Clipboard.setStringAsync(apiKeyCriada);
+    setCopiado(true);
+  };
+
   const abrirDetalhes = (dispositivo) => {
     console.log('Detalhes do dispositivo:', dispositivo);
     // navigation.navigate('DetalhesPrototipo', { dispositivo });
@@ -187,6 +272,15 @@ export default function SensoresScreen({ navigation, route }) {
               {fazendaNome || 'Minha Fazenda'}
             </Text>
           </View>
+
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={abrirModal}
+            disabled={!fazendaId}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.addIcon}>+</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.titleContainer}>
@@ -284,6 +378,97 @@ export default function SensoresScreen({ navigation, route }) {
           </ScrollView>
         )}
       </View>
+
+      <Modal
+        visible={modalVisivel}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          // no estado de sucesso, o botão voltar do Android não fecha
+          if (!criando && !apiKeyCriada) fecharModal();
+        }}
+      >
+        <KeyboardAvoidingView
+          style={styles.modalOverlay}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <View style={styles.modalBox}>
+            {apiKeyCriada ? (
+              <>
+                <Text style={styles.modalTitulo}>Sensor criado!</Text>
+                <Text style={styles.modalTexto}>
+                  Guarde esta chave no código do ESP32. Ela só aparece uma vez.
+                </Text>
+
+                <Text style={styles.apiKeyBox} selectable>
+                  {apiKeyCriada}
+                </Text>
+
+                <TouchableOpacity
+                  style={styles.modalBotaoPrimario}
+                  onPress={copiarChave}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.modalBotaoPrimarioTexto}>
+                    {copiado ? 'Copiado!' : 'Copiar chave'}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.modalBotaoSecundario}
+                  onPress={fecharModal}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.modalBotaoSecundarioTexto}>
+                    Já copiei, fechar
+                  </Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <Text style={styles.modalTitulo}>Adicionar sensor</Text>
+                <Text style={styles.modalTexto}>
+                  Informe o ID do sensor para vincular à fazenda "{fazendaNome}".
+                </Text>
+
+                <TextInput
+                  style={styles.modalInput}
+                  value={novoDeviceId}
+                  onChangeText={setNovoDeviceId}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  placeholder="Ex: esp32-001"
+                  returnKeyType="done"
+                  onSubmitEditing={criarSensor}
+                  editable={!criando}
+                />
+
+                <TouchableOpacity
+                  style={styles.modalBotaoPrimario}
+                  onPress={criarSensor}
+                  disabled={criando}
+                  activeOpacity={0.8}
+                >
+                  {criando ? (
+                    <ActivityIndicator color="#ffffff" />
+                  ) : (
+                    <Text style={styles.modalBotaoPrimarioTexto}>Criar sensor</Text>
+                  )}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.modalBotaoSecundario}
+                  onPress={fecharModal}
+                  disabled={criando}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.modalBotaoSecundarioTexto}>Cancelar</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 }
