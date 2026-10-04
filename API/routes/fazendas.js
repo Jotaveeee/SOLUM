@@ -17,4 +17,10 @@ router.delete(
     (req, res) => FazendaController.delete(req, res)
 );
 
+router.post(
+    "/criar",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => FazendaController.criar(req, res)
+);
+
 module.exports = router;

@@ -79,6 +79,26 @@ class FazendaController {
             return res.status(500).json({ message: "Erro interno do servidor." });
         }
     }
+
+    async criar(req, res) {
+        try {
+            const nome = typeof req.body.nome === "string" ? req.body.nome.trim() : "";
+
+            if (!nome) {
+                return res.status(400).json({ message: "Informe o nome da fazenda." });
+            }
+
+            const fazenda = await Fazenda.create({ nome, usuario: req.user._id });
+
+            return res.status(201).json({
+                message: "Fazenda criada com sucesso.",
+                fazenda: this.formatarFazenda(fazenda)
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Erro interno do servidor." });
+        }
+    }
 }
 
 module.exports = new FazendaController();

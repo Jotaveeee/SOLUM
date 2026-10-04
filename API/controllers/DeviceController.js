@@ -17,31 +17,36 @@ class DeviceController {
         };
     }
 
-    // Cria um dispositivo NOVO, já vinculado à fazenda do usuário
+    // Cria um dispositivo novo
     async criar(req, res) {
         try {
-            const { deviceId, fazendaNome } = req.body;
+            const { deviceId, fazendaId } = req.body;
             const usuario = req.user;
 
-            if (!deviceId) {
-                return res.status(400).json({ message: "Informe o Device ID." });
+            if (typeof deviceId !== "string" || !deviceId.trim() || !fazendaId) {
+                return res.status(400).json({ message: "Informe o Device ID e a Fazenda." });
             }
 
-            // Verifica se o deviceId já existe
-            const existente = await Dispositivo.findOne({ deviceId });
+            if (!mongoose.isValidObjectId(fazendaId)) {
+                return res.status(400).json({ message: "Fazenda inválida." });
+            }
+
+            const fazenda = await Fazenda.findOne({ _id: fazendaId, usuario: usuario._id });
+            if (!fazenda) {
+                return res.status(404).json({ message: "Fazenda não encontrada." });
+            }
+
+            const idLimpo = deviceId.trim();
+
+            const existente = await Dispositivo.findOne({ deviceId: idLimpo });
             if (existente) {
                 return res.status(409).json({ message: "Este Device ID já existe." });
             }
 
-            const fazenda = await Fazenda.create({
-                nome: fazendaNome || "Minha Fazenda",
-                usuario: usuario._id
-            });
-
             const apiKey = crypto.randomBytes(16).toString("hex");
 
             const dispositivo = await Dispositivo.create({
-                deviceId,
+                deviceId: idLimpo,
                 apiKey,
                 fazenda: fazenda._id,
                 usuario: usuario._id,
@@ -54,8 +59,10 @@ class DeviceController {
                 dispositivo: this.formatarDispositivo(dispositivo),
                 apiKey
             });
-
         } catch (error) {
+            if (error.code === 11000) {
+                return res.status(409).json({ message: "Este Device ID já existe." });
+            }
             console.error(error);
             return res.status(500).json({ message: "Erro interno do servidor." });
         }
