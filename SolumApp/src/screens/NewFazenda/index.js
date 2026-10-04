@@ -21,13 +21,13 @@ export default function NewFazenda() {
     const navigation = useNavigation();
 
     const [nomeFazenda, setNomeFazenda] = useState('');
-    const [deviceId, setDeviceId] = useState('');
     const [loading, setLoading] = useState(false);
 
-    async function criarFazendaEDispositivo() {
+    async function criarFazenda() {
+        const nome = nomeFazenda.trim();
 
-        if (!nomeFazenda.trim() || !deviceId.trim()) {
-            Alert.alert('Atenção', 'Preencha o nome da fazenda e o ID do sensor.');
+        if (!nome) {
+            Alert.alert('Atenção', 'Preencha o nome da fazenda.');
             return;
         }
 
@@ -41,39 +41,37 @@ export default function NewFazenda() {
                 return;
             }
 
-            const response = await fetch(`${API_URL}/devices/criar`, {
+            const response = await fetch(`${API_URL}/fazenda/criar`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify({
-                    deviceId: deviceId.trim(),
-                    fazendaNome: nomeFazenda.trim(),
-                }),
+                body: JSON.stringify({ nome }),
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                Alert.alert('Erro', data.message || 'Não foi possível criar o dispositivo.');
+                Alert.alert(
+                    'Erro',
+                    data.message || `Não foi possível criar a fazenda (HTTP ${response.status}).`
+                );
                 return;
             }
 
-            // Mostra a apiKey pro usuário copiar e colocar no código do ESP32
-            Alert.alert(
-                'Dispositivo criado!',
-                `Guarde essa chave, ela só aparece uma vez:\n\n${data.apiKey}`,
-                [
-                    {
-                        text: 'OK, copiei',
-                        onPress: () => navigation.replace('Fazendas'),
-                    },
-                ]
-            );
+            if (!data.fazenda?.id) {
+                Alert.alert('Erro', 'Resposta inesperada da API.');
+                return;
+            }
+
+            navigation.replace('Sensors', {
+                fazendaId: data.fazenda.id,
+                fazendaNome: data.fazenda.nome,
+            });
 
         } catch (error) {
-            console.error('Erro ao criar dispositivo:', error);
+            console.error('Erro ao criar fazenda:', error);
             Alert.alert('Erro', 'Não foi possível conectar à API.');
         } finally {
             setLoading(false);
@@ -96,7 +94,7 @@ export default function NewFazenda() {
                     />
 
                     <Text style={styles.titulo}>
-                        Crie sua Fazenda
+                        Nova Fazenda
                     </Text>
 
                     <View style={styles.container3}>
@@ -112,20 +110,8 @@ export default function NewFazenda() {
                                 onChangeText={setNomeFazenda}
                                 autoCapitalize="words"
                                 placeholder="Ex: Fazenda Boa Esperança"
-                            />
-                        </View>
-
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.subtitulo}>
-                                Adicione seu primeiro sensor!
-                            </Text>
-
-                            <TextInput
-                                style={styles.input}
-                                value={deviceId}
-                                onChangeText={setDeviceId}
-                                autoCapitalize="none"
-                                placeholder="Ex: esp32-001"
+                                returnKeyType="done"
+                                onSubmitEditing={criarFazenda}
                             />
                         </View>
 
@@ -135,7 +121,7 @@ export default function NewFazenda() {
                         >
                             <TouchableOpacity
                                 style={styles.button2}
-                                onPress={criarFazendaEDispositivo}
+                                onPress={criarFazenda}
                                 disabled={loading}
                             >
                                 {loading ? (
@@ -151,6 +137,7 @@ export default function NewFazenda() {
                         <TouchableOpacity
                             style={styles.backButton}
                             onPress={() => navigation.replace('MainTabs')}
+                            disabled={loading}
                         >
                             <Text style={styles.backButtonText}>
                                 VOLTAR
@@ -163,4 +150,4 @@ export default function NewFazenda() {
             </View>
         </KeyboardAvoidingView>
     );
-}   
+}
