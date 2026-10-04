@@ -2,6 +2,7 @@ const Dispositivo = require("../models/Dispositivo");
 const Fazenda = require("../models/Fazenda");
 const crypto = require("crypto");
 const mongoose = require("mongoose");
+const Leitura = require("../models/Leitura");
 
 class DeviceController {
 
@@ -26,16 +27,16 @@ class DeviceController {
                 return res.status(400).json({ message: "Informe o Device ID." });
             }
 
-            const fazenda = await Fazenda.create({
-                nome: fazendaNome || "Minha Fazenda",
-                usuario: usuario._id
-            });
-
             // Verifica se o deviceId já existe
             const existente = await Dispositivo.findOne({ deviceId });
             if (existente) {
                 return res.status(409).json({ message: "Este Device ID já existe." });
             }
+
+            const fazenda = await Fazenda.create({
+                nome: fazendaNome || "Minha Fazenda",
+                usuario: usuario._id
+            });
 
             const apiKey = crypto.randomBytes(16).toString("hex");
 
@@ -149,6 +150,34 @@ class DeviceController {
                 dispositivos: dispositivos.map(d => this.formatarDispositivo(d))
             });
             
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Erro interno do servidor." });
+        }
+    }
+
+    async delete(req, res) {
+        try {
+            const { id } = req.params;
+
+            if (!mongoose.isValidObjectId(id)) {
+                return res.status(400).json({ message: "Dispositivo inválido." });
+            }
+
+            const dispositivo = await Dispositivo.findOne({
+                _id: id,
+                usuario: req.user._id
+            });
+
+            if (!dispositivo) {
+                return res.status(404).json({ message: "Dispositivo não encontrado." });
+            }
+
+            // remove as leituras e dispositivo
+            await Leitura.deleteMany({ dispositivo: dispositivo._id });
+            await dispositivo.deleteOne();
+
+            return res.status(200).json({ message: "Dispositivo removido com sucesso." });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ message: "Erro interno do servidor." });

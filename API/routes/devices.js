@@ -24,4 +24,11 @@ router.get(
     (req, res) => DeviceController.me(req, res)
 );
 
+// Deletar dispositivo do usuário logado
+router.delete(
+    "/:id",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => DeviceController.delete(req, res)
+);
+
 module.exports = router;

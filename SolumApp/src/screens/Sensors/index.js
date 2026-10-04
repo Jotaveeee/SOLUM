@@ -5,9 +5,11 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import { API_URL } from '../../services/api';
 import styles from './styles';
@@ -16,11 +18,11 @@ export default function SensoresScreen({ navigation, route }) {
   const [dispositivos, setDispositivos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
+  const [excluindoId, setExcluindoId] = useState(null);
 
   const fazendaId = route.params?.fazendaId;
   const fazendaNome = route.params?.fazendaNome;
 
-  // Define o status com base na umidade do solo
   const calcularStatus = (umidade) => {
     if (umidade === null || umidade === undefined) return 'Normal';
     if (umidade < 20) return 'Alerta máximo';
@@ -30,40 +32,36 @@ export default function SensoresScreen({ navigation, route }) {
 
   const carregarDados = async () => {
     try {
+      if (!fazendaId) {
+        setErro('Fazenda não informada.');
+        return;
+      }
+
       const token = await SecureStore.getItemAsync('token');
 
       if (!token) {
         setErro('Você precisa estar logado.');
-        setLoading(false);
         return;
       }
 
       const headers = { Authorization: `Bearer ${token}` };
 
-      // Busca os dispositivos e as leituras em paralelo
       const [respDispositivos, respLeituras] = await Promise.all([
         fetch(`${API_URL}/devices/me?fazenda=${fazendaId}`, { headers }),
         fetch(`${API_URL}/leituras/me`, { headers }),
       ]);
 
-      const dataDispositivos = await respDispositivos.json();
-      const dataLeituras = await respLeituras.json();
+      const dataDispositivos = await respDispositivos.json().catch(() => ({}));
+      const dataLeituras = await respLeituras.json().catch(() => ({}));
 
-      if (respDispositivos.status === 404) {
-        setDispositivos([]);
-        setErro(null);
-        return;
-      }
-      
       if (!respDispositivos.ok) {
         setErro(dataDispositivos.message || 'Erro ao buscar dispositivos.');
         return;
       }
 
-      const leituras = respLeituras.ok ? dataLeituras.leituras : [];
+      const leituras = respLeituras.ok ? dataLeituras.leituras || [] : [];
 
-      // Para cada dispositivo, acha a leitura mais recente dele
-      const listaCompleta = dataDispositivos.dispositivos.map((dispositivo) => {
+      const listaCompleta = (dataDispositivos.dispositivos || []).map((dispositivo) => {
         const leituraMaisRecente = leituras.find(
           (leitura) => leitura.dispositivo === dispositivo.id
         );
@@ -71,7 +69,7 @@ export default function SensoresScreen({ navigation, route }) {
         return {
           id: dispositivo.id,
           nome: dispositivo.deviceId,
-          local: dispositivo.fazenda?.nome || 'Sem fazenda',
+          local: dispositivo.fazenda?.nome || fazendaNome || 'Sem fazenda',
           umidade: leituraMaisRecente ? `${leituraMaisRecente.umidadeSolo}%` : '--',
           temperatura: leituraMaisRecente ? `${leituraMaisRecente.temperatura}°C` : '--',
           status: calcularStatus(leituraMaisRecente?.umidadeSolo),
@@ -80,7 +78,6 @@ export default function SensoresScreen({ navigation, route }) {
 
       setDispositivos(listaCompleta);
       setErro(null);
-
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       setErro('Não foi possível conectar à API.');
@@ -93,7 +90,56 @@ export default function SensoresScreen({ navigation, route }) {
     carregarDados();
     const interval = setInterval(carregarDados, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fazendaId]);
+
+  const confirmarExclusao = async (dispositivo) => {
+    try {
+      setExcluindoId(dispositivo.id);
+
+      const token = await SecureStore.getItemAsync('token');
+      if (!token) {
+        Alert.alert('Erro', 'Você precisa estar logado.');
+        return;
+      }
+
+      const resp = await fetch(`${API_URL}/devices/${dispositivo.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await resp.json().catch(() => ({}));
+
+      if (!resp.ok) {
+        Alert.alert(
+          'Erro',
+          data.message || `Não foi possível excluir (HTTP ${resp.status}).`
+        );
+        return;
+      }
+
+      await carregarDados();
+    } catch (error) {
+      console.error('Erro ao excluir sensor:', error);
+      Alert.alert('Erro', 'Não foi possível conectar à API.');
+    } finally {
+      setExcluindoId(null);
+    }
+  };
+
+  const excluirSensor = (dispositivo) => {
+    Alert.alert(
+      'Excluir sensor',
+      `Isso apagará o sensor "${dispositivo.nome}" e todas as leituras dele. Essa ação não pode ser desfeita.`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => confirmarExclusao(dispositivo),
+        },
+      ]
+    );
+  };
 
   const abrirDetalhes = (dispositivo) => {
     console.log('Detalhes do dispositivo:', dispositivo);
@@ -138,7 +184,7 @@ export default function SensoresScreen({ navigation, route }) {
 
           <View style={styles.headerText}>
             <Text style={styles.fazendaNome} numberOfLines={1}>
-              {dispositivos[0]?.local || 'Minha Fazenda'}
+              {fazendaNome || 'Minha Fazenda'}
             </Text>
           </View>
         </View>
@@ -158,7 +204,7 @@ export default function SensoresScreen({ navigation, route }) {
           </Text>
         ) : dispositivos.length === 0 ? (
           <Text style={{ textAlign: 'center', marginTop: 40 }}>
-            Nenhum dispositivo cadastrado ainda.
+            Nenhum sensor nesta fazenda ainda.
           </Text>
         ) : (
           <ScrollView
@@ -168,6 +214,7 @@ export default function SensoresScreen({ navigation, route }) {
           >
             {dispositivos.map((dispositivo) => {
               const statusStyles = getStatusStyles(dispositivo.status);
+              const excluindo = excluindoId === dispositivo.id;
 
               return (
                 <View key={dispositivo.id} style={styles.card}>
@@ -206,14 +253,29 @@ export default function SensoresScreen({ navigation, route }) {
                     </View>
                   </View>
 
-                  <TouchableOpacity
-                    style={styles.detailsButton}
-                    onPress={() => abrirDetalhes(dispositivo)}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={styles.detailsButtonText}>Ver detalhes</Text>
-                    <Text style={styles.arrow}>→</Text>
-                  </TouchableOpacity>
+                  <View style={styles.actionsRow}>
+                    <TouchableOpacity
+                      style={styles.detailsButton}
+                      onPress={() => abrirDetalhes(dispositivo)}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.detailsButtonText}>Ver detalhes</Text>
+                      <Text style={styles.arrow}>→</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={() => excluirSensor(dispositivo)}
+                      disabled={excluindo}
+                      activeOpacity={0.7}
+                    >
+                      {excluindo ? (
+                        <ActivityIndicator size="small" color="#D93636" />
+                      ) : (
+                        <Ionicons name="trash-outline" size={20} color="#D93636" />
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 </View>
               );
             })}

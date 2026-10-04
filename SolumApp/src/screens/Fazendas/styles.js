@@ -165,6 +165,33 @@ export default StyleSheet.create({
   },
 
   /*
+   * CARD DA FAZENDA (linha: info + lixeira)
+   */
+  cardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  cardInfo: {
+    flex: 1,
+    minWidth: 0,
+    paddingVertical: 4,
+    marginRight: 12,
+  },
+
+  /*
+   * BOTÃO DE EXCLUIR
+   */
+  deleteButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 13,
+    backgroundColor: '#fde4e4',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  /*
    * BOLINHA
    */
   sensorIcon: {

@@ -10,4 +10,11 @@ router.get(
     (req, res) => FazendaController.me(req, res)
 );
 
+// Deletar fazenda do usuário logado
+router.delete(
+    "/:id",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => FazendaController.delete(req, res)
+);
+
 module.exports = router;

@@ -5,9 +5,11 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import { API_URL } from '../../services/api';
 import styles from './styles';
@@ -17,6 +19,7 @@ export default function FazendasScreen({ navigation }) {
   const [fazendas, setFazendas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
+  const [excluindoId, setExcluindoId] = useState(null);
 
   const carregarFazendas = async () => {
     try {
@@ -28,25 +31,16 @@ export default function FazendasScreen({ navigation }) {
       }
 
       const headers = { Authorization: `Bearer ${token}` };
+      const resp = await fetch(`${API_URL}/fazenda/me`, { headers });
+      const data = await resp.json();
 
-      const respFazendas = await fetch(`${API_URL}/fazenda/me`, { headers });
-
-      const dataFazendas = await respFazendas.json();
-
-      if (respFazendas.status === 404) {
-        setFazendas([]);
-        setErro(null);
-        return;
-      }
-      
-      if (!respFazendas.ok) {
-        setErro(dataFazendas.message || 'Erro ao buscar fazendas.');
+      if (!resp.ok) {
+        setErro(data.message || 'Erro ao buscar fazendas.');
         return;
       }
 
-      setFazendas(dataFazendas.fazendas);
+      setFazendas(data.fazendas);
       setErro(null);
-
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       setErro('Não foi possível conectar à API.');
@@ -60,6 +54,56 @@ export default function FazendasScreen({ navigation }) {
       carregarFazendas();
     }, [])
   );
+
+  const confirmarExclusao = async (fazenda) => {
+    try {
+      setExcluindoId(fazenda.id);
+
+      const token = await SecureStore.getItemAsync('token');
+      if (!token) {
+        Alert.alert('Erro', 'Você precisa estar logado.');
+        return;
+      }
+
+      const resp = await fetch(`${API_URL}/fazenda/${fazenda.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // se vier HTML (ex.: "Cannot DELETE"), não quebra o app
+      const data = await resp.json().catch(() => ({}));
+
+      if (!resp.ok) {
+        Alert.alert(
+          'Erro',
+          data.message || `Não foi possível excluir (HTTP ${resp.status}).`
+        );
+        return;
+      }
+
+      await carregarFazendas();
+    } catch (error) {
+      console.error('Erro ao excluir fazenda:', error);
+      Alert.alert('Erro', 'Não foi possível conectar à API.');
+    } finally {
+      setExcluindoId(null);
+    }
+  };
+
+  const excluirFazenda = (fazenda) => {
+    Alert.alert(
+      'Excluir fazenda',
+      `Isso apagará a fazenda "${fazenda.nome}", seus sensores e todas as leituras. Essa ação não pode ser desfeita.`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => confirmarExclusao(fazenda),
+        },
+      ]
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -77,9 +121,7 @@ export default function FazendasScreen({ navigation }) {
 
         <View style={styles.titleContainer}>
           <Text style={styles.titulo}>Minhas fazendas</Text>
-          <Text style={styles.subtitulo}>
-            Acompanhe as suas fazendas!
-          </Text>
+          <Text style={styles.subtitulo}>Acompanhe as suas fazendas!</Text>
         </View>
 
         {loading ? (
@@ -98,31 +140,41 @@ export default function FazendasScreen({ navigation }) {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            {fazendas.map((fazenda) => {
-              return (
+            {fazendas.map((fazenda) => (
+              <View key={fazenda.id} style={[styles.card, styles.cardRow]}>
                 <TouchableOpacity
-                  key={fazenda.id}
-                  onPress={() => navigation.navigate('Sensors', {
-                    fazendaId: fazenda.id,
-                    fazendaNome: fazenda.nome
-                  })}
+                  style={styles.cardInfo}
+                  onPress={() =>
+                    navigation.navigate('Sensors', {
+                      fazendaId: fazenda.id,
+                      fazendaNome: fazenda.nome,
+                    })
+                  }
                   activeOpacity={0.7}
                 >
-                <View style={styles.card}>
-                  <View style={styles.cardHeader}>
-                    <View style={styles.sensorTitleContainer}>
-                      <Text style={styles.sensorNome} numberOfLines={1}>
-                        {fazenda.nome}
-                      </Text>
-                      <Text style={styles.sensorTipo} numberOfLines={1}>
-                        Criada em {new Date(fazenda.createdAt).toLocaleDateString('pt-BR')}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
+                  <Text style={styles.sensorNome} numberOfLines={1}>
+                    {fazenda.nome}
+                  </Text>
+                  <Text style={styles.sensorTipo} numberOfLines={1}>
+                    Criada em {new Date(fazenda.createdAt).toLocaleDateString('pt-BR')}
+                  </Text>
                 </TouchableOpacity>
-              );
-            })}
+
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => excluirFazenda(fazenda)}
+                  disabled={excluindoId === fazenda.id}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  activeOpacity={0.7}
+                >
+                  {excluindoId === fazenda.id ? (
+                    <ActivityIndicator size="small" color="#D93636" />
+                  ) : (
+                    <Ionicons name="trash-outline" size={20} color="#D93636" />
+                  )}
+                </TouchableOpacity>
+              </View>
+            ))}
 
             <View style={styles.bottomSpace} />
           </ScrollView>

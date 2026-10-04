@@ -358,7 +358,7 @@ export default StyleSheet.create({
    * BOTÃO
    */
   detailsButton: {
-    width: '100%',
+    flex: 1,
 
     minHeight: 43,
 
@@ -396,10 +396,31 @@ export default StyleSheet.create({
   },
 
   /*
+   * LINHA DE AÇÕES (detalhes + excluir)
+   */
+  
+  actionsRow: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  deleteButton: {
+    width: 43,
+    height: 43,
+    borderRadius: 13,
+    backgroundColor: '#fde4e4',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+  },
+
+  /*
    * FINAL
    */
   bottomSpace: {
     height: 10,
   },
 
+  
 });
