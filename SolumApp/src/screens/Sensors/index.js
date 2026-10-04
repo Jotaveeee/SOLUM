@@ -11,14 +11,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
 import { API_URL } from '../../services/api';
 import styles from './styles';
-import { route } from '../../../../API/routes/devices';
 
-export default function SensoresScreen({ navigation }) {
+export default function SensoresScreen({ navigation, route }) {
   const [dispositivos, setDispositivos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
 
-  const { fazendaId, fazendaNome } = route.params;
+  const fazendaId = route.params?.fazendaId;
+  const fazendaNome = route.params?.fazendaNome;
 
   // Define o status com base na umidade do solo
   const calcularStatus = (umidade) => {
