@@ -227,7 +227,7 @@ export default function Start() {
                 Esqueceu a senha?
               </Text>
 
-              <TouchableOpacity onPress={() => navigation.replace('Recover')}>
+              <TouchableOpacity onPress={() => navigation.replace('EmailRecover')}>
                 <Text style={styles.rodape2}>
                   Recuperar senha
                 </Text>

@@ -228,7 +228,10 @@ export default function SensoresScreen({ navigation, route }) {
 
   const abrirDetalhes = (dispositivo) => {
     console.log('Detalhes do dispositivo:', dispositivo);
-    // navigation.navigate('DetalhesPrototipo', { dispositivo });
+    navigation.navigate('SensorDetalhes', {
+      dispositivoId: dispositivo.id,
+      dispositivoNome: dispositivo.nome,
+    });
   };
 
   const getStatusStyles = (status) => {

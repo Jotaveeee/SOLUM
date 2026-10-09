@@ -7,6 +7,8 @@ import Redefine from '../screens/Redefine';
 import NewFazenda from '../screens/NewFazenda';
 import Sensors from '../screens/Sensors';
 import Fazendas from '../screens/Fazendas';
+import SensorDetalhes from '../screens/SensorDetalhes';
+import EmailRecover from '../screens/EmailRecover';
 import inferiorTabsRoutes from './inferiorTabsRoutes';
 
 
@@ -28,6 +30,8 @@ export default function StackRoutes() {
             <Stack.Screen name='NewFazenda' component={NewFazenda}/>  
             <Stack.Screen name='Sensors' component={Sensors}/>
             <Stack.Screen name='Fazendas' component={Fazendas}/>
+            <Stack.Screen name='EmailRecover' component={EmailRecover}/>
+            <Stack.Screen name='SensorDetalhes' component={SensorDetalhes}/>
         </Stack.Navigator>
     );
 }
