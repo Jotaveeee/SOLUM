@@ -197,4 +197,20 @@ export default StyleSheet.create({
 
     color: '#0F760A',
   },
+  botaoSuporte: {
+  position: 'absolute',
+  bottom: 65,
+  right: 25,
+
+  width: 48,
+  height: 48,
+
+  borderRadius: 24,
+  backgroundColor: '#e2e2e2',
+
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  zIndex: 10,
+},
 });

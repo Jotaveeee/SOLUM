@@ -89,7 +89,7 @@ export default function Register() {
         'token',
         data.token
       );
-      
+
       await SecureStore.setItemAsync(
         'usuario',
         JSON.stringify(data.usuario)
@@ -130,7 +130,6 @@ export default function Register() {
       style={styles.keyboard}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-
       <View style={styles.container}>
 
         <View style={styles.content}>

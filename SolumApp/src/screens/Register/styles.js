@@ -166,12 +166,4 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
 
-  buttonText2: {
-    color: '#E1E6E2',
-
-    fontFamily: fontNames.bold,
-
-    fontSize: 26,
-  },
-
 });

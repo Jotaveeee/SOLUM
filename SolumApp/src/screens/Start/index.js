@@ -17,6 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from "@react-navigation/native";
 import { API_URL } from '../../services/api';
 import * as SecureStore from 'expo-secure-store';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Start() {
   const navigation = useNavigation();
@@ -127,6 +128,17 @@ export default function Start() {
       style={styles.keyboard}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
+      <TouchableOpacity
+        style={styles.botaoSuporte}
+        onPress={() => navigation.navigate('SupportS')}
+        activeOpacity={0.7}
+      >
+        <Ionicons
+          name="help-circle-outline"
+          size={26}
+          color="#249057"
+        />
+      </TouchableOpacity>
       <View style={styles.container}>
 
         <View style={styles.content}>
