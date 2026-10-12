@@ -47,7 +47,6 @@ export default StyleSheet.create({
     marginTop: 2,
   },
 
-
   /*
    * SEÇÕES
    */
@@ -65,37 +64,12 @@ export default StyleSheet.create({
     color: '#000000',
   },
 
-
-  /*
-   * ALERTAS
-   */
- alertCard: {
-  width: '100%',
-
-  height: 70,
-
-  backgroundColor: '#FFF0D9',
-
-  borderRadius: 20,
-
-  paddingHorizontal: 20,
-
-  justifyContent: 'center',
-
-  borderLeftWidth: 4,
-  borderLeftColor: '#F59E0B',
-
-  marginTop: 12,
-},
-
-  alertText: {
-    fontSize: 14,
-
-    fontFamily: fontNames.regular,
-
-    color: '#444444',
+  linhaHorizontal: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#D1D5DB',
+    marginVertical: 16,
   },
-
 
   /*
    * SEÇÃO DE FAZENDAS
@@ -104,7 +78,7 @@ export default StyleSheet.create({
     width: '100%',
 
     flex: 1,
-
+    marginTop: 15,
     marginBottom: 100,
   },
 

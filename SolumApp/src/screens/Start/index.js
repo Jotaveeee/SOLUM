@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   TextInput,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
   Alert,
 } from 'react-native';
@@ -14,18 +15,21 @@ import styles, { fontNames } from './styles';
 import { useState, useEffect } from 'react';
 import * as Font from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation } from '@react-navigation/native';
 import { API_URL } from '../../services/api';
 import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function Start() {
   const navigation = useNavigation();
+
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
+  const [tecladoAberto, setTecladoAberto] = useState(false);
 
+  // Carregar fontes
   useEffect(() => {
     async function loadFonts() {
       try {
@@ -43,14 +47,35 @@ export default function Start() {
     loadFonts();
   }, []);
 
+  // Detectar abertura e fechamento do teclado
+  useEffect(() => {
+    const eventoMostrar = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setTecladoAberto(true);
+      }
+    );
+
+    const eventoEsconder = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setTecladoAberto(false);
+      }
+    );
+
+    return () => {
+      eventoMostrar.remove();
+      eventoEsconder.remove();
+    };
+  }, []);
+
   if (!fontsLoaded) {
     return <ActivityIndicator />;
   }
 
+  // Fazer login
   async function fazerLogin() {
-
     if (!email.trim() || !senha.trim()) {
-
       Alert.alert(
         'Atenção',
         'Informe o e-mail e a senha.'
@@ -62,17 +87,14 @@ export default function Start() {
     setLoading(true);
 
     try {
-
       const response = await fetch(
         `${API_URL}/auth/login`,
         {
           method: 'POST',
-
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           },
-
           body: JSON.stringify({
             email: email.trim(),
             senha: senha,
@@ -83,7 +105,6 @@ export default function Start() {
       const data = await response.json();
 
       if (!response.ok) {
-
         Alert.alert(
           'Erro',
           data.message || 'E-mail ou senha inválidos.'
@@ -105,7 +126,6 @@ export default function Start() {
       navigation.replace('MainTabs');
 
     } catch (error) {
-
       console.error(
         'Erro ao fazer login:',
         error
@@ -117,9 +137,7 @@ export default function Start() {
       );
 
     } finally {
-
       setLoading(false);
-
     }
   }
 
@@ -128,19 +146,22 @@ export default function Start() {
       style={styles.keyboard}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <TouchableOpacity
-        style={styles.botaoSuporte}
-        onPress={() => navigation.navigate('SupportS')}
-        activeOpacity={0.7}
-      >
-        <Ionicons
-          name="help-circle-outline"
-          size={26}
-          color="#249057"
-        />
-      </TouchableOpacity>
-      <View style={styles.container}>
+      {/* Botão de suporte: oculto enquanto o teclado estiver aberto */}
+      {!tecladoAberto && (
+        <TouchableOpacity
+          style={styles.botaoSuporte}
+          onPress={() => navigation.navigate('SupportS')}
+          activeOpacity={0.7}
+        >
+          <Ionicons
+            name="help-circle-outline"
+            size={26}
+            color="#249057"
+          />
+        </TouchableOpacity>
+      )}
 
+      <View style={styles.container}>
         <View style={styles.content}>
 
           {/* Logo */}
@@ -155,10 +176,10 @@ export default function Start() {
             Bem Vindo de volta!
           </Text>
 
-          {/* Botões */}
+          {/* Botões Entrar e Criar conta */}
           <View style={styles.container2}>
-
-            <TouchableOpacity style={styles.button}
+            <TouchableOpacity
+              style={styles.button}
               disabled={true}
             >
               <Text style={styles.buttonText3}>
@@ -166,17 +187,20 @@ export default function Start() {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.button, styles.buttonDisabled]} onPress={() => navigation.replace('Register')}>
+            <TouchableOpacity
+              style={[styles.button, styles.buttonDisabled]}
+              onPress={() => navigation.replace('Register')}
+            >
               <Text style={styles.buttonText}>
                 Criar conta
               </Text>
             </TouchableOpacity>
-
           </View>
 
           {/* Formulário */}
           <View style={styles.container3}>
 
+            {/* E-mail */}
             <View style={styles.inputGroup}>
               <Text style={styles.subtitulo}>
                 Email
@@ -195,6 +219,7 @@ export default function Start() {
               />
             </View>
 
+            {/* Senha */}
             <View style={styles.inputGroup}>
               <Text style={styles.subtitulo}>
                 Senha
@@ -213,7 +238,7 @@ export default function Start() {
               />
             </View>
 
-            {/* Botão ENTRAR */}
+            {/* Botão Entrar */}
             <LinearGradient
               colors={['#249057', '#53BE70']}
               style={styles.gradiente}
@@ -227,7 +252,7 @@ export default function Start() {
                   <ActivityIndicator color="#FFFFFF" />
                 ) : (
                   <Text style={styles.buttonText2}>
-                    ENTRAR →
+                    ENTRAR
                   </Text>
                 )}
               </TouchableOpacity>
@@ -239,7 +264,9 @@ export default function Start() {
                 Esqueceu a senha?
               </Text>
 
-              <TouchableOpacity onPress={() => navigation.replace('EmailRecover')}>
+              <TouchableOpacity
+                onPress={() => navigation.replace('EmailRecover')}
+              >
                 <Text style={styles.rodape2}>
                   Recuperar senha
                 </Text>
@@ -247,9 +274,7 @@ export default function Start() {
             </View>
 
           </View>
-
         </View>
-
       </View>
     </KeyboardAvoidingView>
   );

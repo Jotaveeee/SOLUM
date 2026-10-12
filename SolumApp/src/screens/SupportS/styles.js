@@ -302,7 +302,7 @@ export default StyleSheet.create({
     fontSize: 18,
   },
 
-  
+
   listaAnexos: {
     marginTop: 10,
     gap: 8,
@@ -337,85 +337,88 @@ export default StyleSheet.create({
   },
 
   modalOverlay: {
-  flex: 1,
-  backgroundColor: 'rgba(0, 0, 0, 0.55)',
-  justifyContent: 'flex-end',
-},
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+    justifyContent: 'flex-end',
+  },
 
-modalOverlay: {
-  flex: 1,
-  backgroundColor: 'rgba(0, 0, 0, 0.25)',
-  justifyContent: 'flex-end',
-},
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    justifyContent: 'flex-end',
+  },
 
-modalContainer: {
-  backgroundColor: '#FFFFFF',
-  borderTopLeftRadius: 24,
-  borderTopRightRadius: 24,
-  padding: 24,
-  paddingBottom: 30,
-},
+  modalContainer: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
+    paddingBottom: 30,
+  },
 
-modalTitulo: {
-  color: '#1A1A1A',
-  fontSize: 20,
-  fontWeight: '700',
-  marginBottom: 6,
-},
+  modalTitulo: {
+    color: '#1A1A1A',
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
 
-modalDescricao: {
-  color: '#777777',
-  fontSize: 14,
-  marginBottom: 20,
-},
+  modalDescricao: {
+    color: '#777777',
+    fontSize: 14,
+    marginBottom: 20,
+  },
 
-modalOpcao: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  paddingVertical: 16,
-  borderBottomWidth: 1,
-  borderBottomColor: '#E8E8E8',
-},
+  modalOpcao: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E8E8E8',
+  },
 
-modalIcone: {
-  width: 40,
-},
+  modalIcone: {
+    width: 40,
+  },
 
-modalTexto: {
-  color: '#1A1A1A',
-  fontSize: 16,
-  fontWeight: '500',
-},
+  modalTexto: {
+    color: '#1A1A1A',
+    fontSize: 16,
+    fontWeight: '500',
+  },
 
-modalCancelar: {
-  alignItems: 'center',
-  marginTop: 18,
-  paddingVertical: 14,
-  borderRadius: 12,
-  backgroundColor: '#249057',
-},
+  modalCancelar: {
+    alignItems: 'center',
+    marginTop: 18,
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: '#249057',
+  },
 
-modalCancelarTexto: {
-  color: '#FFFFFF',
-  fontSize: 15,
-  fontWeight: '600',
-},
+  modalCancelarTexto: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '600',
+  },
 
-botaoVoltar: {
-  position: 'absolute',
-  top: 60,
-  left: 30,
+  botaoVoltar: {
+    position: 'absolute',
+    top: 60,
+    left: 30,
 
-  width: 45,
-  height: 45,
+    width: 45,
+    height: 45,
 
-  borderRadius: 22.5,
-  backgroundColor: '#e2e2e2',
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
 
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  zIndex: 10,
-},
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+    zIndex: 10,
+  },
 
 });

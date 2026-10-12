@@ -1,15 +1,14 @@
-
-import React from 'react';
 import {
   View,
   Text,
   ScrollView,
-  SafeAreaView,
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
+
 import { Ionicons } from '@expo/vector-icons';
 import styles from './styles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SensorDetalhes({ route, navigation }) {
   const dispositivoNome =
@@ -194,10 +193,16 @@ export default function SensorDetalhes({ route, navigation }) {
             onPress={() => navigation.goBack()}
             activeOpacity={0.7}
           >
-            <Ionicons name="arrow-back" size={23} color="#202820" />
+            <Ionicons
+              name="arrow-back"
+              size={23}
+              color="#202820"
+            />
           </TouchableOpacity>
 
-          <Text style={styles.tituloPagina}>Detalhes do sensor</Text>
+          <Text style={styles.tituloPagina}>
+            Detalhes do sensor
+          </Text>
 
           <View style={styles.espacoTopo} />
         </View>
@@ -206,21 +211,29 @@ export default function SensorDetalhes({ route, navigation }) {
         <View style={styles.cabecalho}>
           <View style={styles.cabecalhoLinha}>
             <View style={styles.cabecalhoIcone}>
-              <Ionicons name="leaf-outline" size={25} color="#249057" />
+              <Ionicons
+                name="leaf-outline"
+                size={25}
+                color="#249057"
+              />
             </View>
 
             <View style={styles.cabecalhoTexto}>
               <Text style={styles.titulo} numberOfLines={1}>
                 {dispositivoNome}
               </Text>
-              <Text style={styles.subtitulo}>Sensor de solo</Text>
+
+              <Text style={styles.subtitulo}>
+                Sensor de solo
+              </Text>
             </View>
 
-            {/* Botão estrutural, sem ação */}
-            <TouchableOpacity>
-            <View style={styles.botaoOutros}>
-              <Text style={styles.botaoOutrosTexto}>OUTROS</Text>
-            </View>
+            <TouchableOpacity activeOpacity={0.7}>
+              <View style={styles.botaoOutros}>
+                <Text style={styles.botaoOutrosTexto}>
+                  OUTROS
+                </Text>
+              </View>
             </TouchableOpacity>
           </View>
 
@@ -229,8 +242,31 @@ export default function SensorDetalhes({ route, navigation }) {
           </Text>
         </View>
 
+        {/* ALERTAS */}
+        <View style={styles.section}>
+          <Text style={styles.tituloSecao}>
+            Alertas
+          </Text>
+
+          <View style={styles.alertCard}>
+            <View style={styles.alertIcone}>
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={23}
+                color="#249057"
+              />
+            </View>
+
+            <Text style={styles.alertText}>
+              Você não possui novos alertas.
+            </Text>
+          </View>
+        </View>
+
         {/* Leituras atuais */}
-        <Text style={styles.secaoTitulo}>Leituras atuais</Text>
+        <Text style={styles.secaoTitulo}>
+          Leituras atuais
+        </Text>
 
         <View style={styles.leiturasLinha}>
           <View style={styles.leituraCard}>
@@ -240,12 +276,24 @@ export default function SensorDetalhes({ route, navigation }) {
                 { backgroundColor: '#E0F2FE' },
               ]}
             >
-              <Ionicons name="water-outline" size={23} color="#2785D8" />
+              <Ionicons
+                name="water-outline"
+                size={23}
+                color="#2785D8"
+              />
             </View>
 
-            <Text style={styles.leituraLabel}>Umidade do solo</Text>
-            <Text style={styles.leituraValor}>{sensor.umidade}%</Text>
-            <Text style={styles.leituraDescricao}>Umidade atual</Text>
+            <Text style={styles.leituraLabel}>
+              Umidade do solo
+            </Text>
+
+            <Text style={styles.leituraValor}>
+              {sensor.umidade}%
+            </Text>
+
+            <Text style={styles.leituraDescricao}>
+              Umidade atual
+            </Text>
           </View>
 
           <View style={styles.leituraCard}>
@@ -262,11 +310,17 @@ export default function SensorDetalhes({ route, navigation }) {
               />
             </View>
 
-            <Text style={styles.leituraLabel}>Temperatura</Text>
+            <Text style={styles.leituraLabel}>
+              Temperatura
+            </Text>
+
             <Text style={styles.leituraValor}>
               {formatarNumero(sensor.temperatura)}°C
             </Text>
-            <Text style={styles.leituraDescricao}>Temperatura atual</Text>
+
+            <Text style={styles.leituraDescricao}>
+              Temperatura atual
+            </Text>
           </View>
         </View>
 
@@ -282,8 +336,13 @@ export default function SensorDetalhes({ route, navigation }) {
 
           <View style={styles.bateriaConteudo}>
             <View style={styles.bateriaTextoLinha}>
-              <Text style={styles.bateriaTitulo}>Bateria do sensor</Text>
-              <Text style={styles.bateriaValor}>{sensor.bateria}%</Text>
+              <Text style={styles.bateriaTitulo}>
+                Bateria do sensor
+              </Text>
+
+              <Text style={styles.bateriaValor}>
+                {sensor.bateria}%
+              </Text>
             </View>
 
             <View style={styles.bateriaTrilho}>
@@ -298,24 +357,44 @@ export default function SensorDetalhes({ route, navigation }) {
         </View>
 
         {/* Médias */}
-        <Text style={styles.secaoTitulo}>Médias do histórico</Text>
+        <Text style={styles.secaoTitulo}>
+          Médias do histórico
+        </Text>
 
         <View style={styles.mediasLinha}>
           <View style={styles.mediaCard}>
-            <Text style={styles.mediaLabel}>Umidade média</Text>
-            <Text style={[styles.mediaValor, { color: '#2785D8' }]}>
+            <Text style={styles.mediaLabel}>
+              Umidade média
+            </Text>
+
+            <Text
+              style={[
+                styles.mediaValor,
+                { color: '#2785D8' },
+              ]}
+            >
               {formatarNumero(mediaUmidade)}%
             </Text>
+
             <Text style={styles.mediaDescricao}>
               {historico.length} leituras
             </Text>
           </View>
 
           <View style={styles.mediaCard}>
-            <Text style={styles.mediaLabel}>Temperatura média</Text>
-            <Text style={[styles.mediaValor, { color: '#E46A45' }]}>
+            <Text style={styles.mediaLabel}>
+              Temperatura média
+            </Text>
+
+            <Text
+              style={[
+                styles.mediaValor,
+                { color: '#E46A45' },
+              ]}
+            >
               {formatarNumero(mediaTemperatura)}°C
             </Text>
+
             <Text style={styles.mediaDescricao}>
               {historico.length} leituras
             </Text>
@@ -323,7 +402,9 @@ export default function SensorDetalhes({ route, navigation }) {
         </View>
 
         {/* Gráficos */}
-        <Text style={styles.secaoTitulo}>Gráficos do histórico</Text>
+        <Text style={styles.secaoTitulo}>
+          Gráficos do histórico
+        </Text>
 
         {renderGrafico('umidade')}
         {renderGrafico('temperatura')}
@@ -331,7 +412,10 @@ export default function SensorDetalhes({ route, navigation }) {
         {/* Histórico de leituras */}
         <View style={styles.historicoCabecalho}>
           <View style={styles.historicoCabecalhoTexto}>
-            <Text style={styles.secaoTitulo}>Histórico de leituras</Text>
+            <Text style={styles.secaoTitulo}>
+              Histórico de leituras
+            </Text>
+
             <Text style={styles.historicoSubtitulo}>
               Leituras registradas pelo sensor
             </Text>
@@ -348,21 +432,38 @@ export default function SensorDetalhes({ route, navigation }) {
           .slice()
           .reverse()
           .map((item) => (
-            <View key={item.id} style={styles.historicoCard}>
+            <View
+              key={item.id}
+              style={styles.historicoCard}
+            >
               <View style={styles.historicoData}>
                 <View style={styles.historicoIcone}>
-                  <Ionicons name="time-outline" size={20} color="#249057" />
+                  <Ionicons
+                    name="time-outline"
+                    size={20}
+                    color="#249057"
+                  />
                 </View>
 
                 <View>
-                  <Text style={styles.historicoHorario}>{item.horario}</Text>
-                  <Text style={styles.historicoDataTexto}>{item.data}</Text>
+                  <Text style={styles.historicoHorario}>
+                    {item.horario}
+                  </Text>
+
+                  <Text style={styles.historicoDataTexto}>
+                    {item.data}
+                  </Text>
                 </View>
               </View>
 
               <View style={styles.historicoMedicoes}>
                 <View style={styles.historicoMedicao}>
-                  <Ionicons name="water-outline" size={16} color="#2785D8" />
+                  <Ionicons
+                    name="water-outline"
+                    size={16}
+                    color="#2785D8"
+                  />
+
                   <Text style={styles.historicoMedicaoTexto}>
                     {item.umidade}%
                   </Text>
@@ -374,6 +475,7 @@ export default function SensorDetalhes({ route, navigation }) {
                     size={16}
                     color="#E46A45"
                   />
+
                   <Text style={styles.historicoMedicaoTexto}>
                     {formatarNumero(item.temperatura)}°C
                   </Text>
@@ -389,9 +491,11 @@ export default function SensorDetalhes({ route, navigation }) {
               size={35}
               color="#999999"
             />
+
             <Text style={styles.vazioTitulo}>
               Nenhuma leitura disponível
             </Text>
+
             <Text style={styles.vazioTexto}>
               O histórico aparecerá aqui quando o sensor registrar leituras.
             </Text>

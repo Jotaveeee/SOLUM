@@ -30,7 +30,7 @@ export default function SupportS() {
   const [modalAnexo, setModalAnexo] = useState(false);
 
   const tiposProblema = [
-    'Falha no sistema',
+    'Falha no Protótipo',
     'Problema com sensor',
     'Erro no aplicativo',
     'Outro',
@@ -235,7 +235,7 @@ Obrigado.
       const resultado =
         await MailComposer.composeAsync({
           recipients: [
-            'suporte@empresa.com',
+            'iagogcampos09@gmail.com',
           ],
 
           subject:
@@ -293,7 +293,7 @@ Obrigado.
         <Ionicons
           name="arrow-back"
           size={26}
-          color="#249057"
+          color="#000000"
         />
       </TouchableOpacity>
 

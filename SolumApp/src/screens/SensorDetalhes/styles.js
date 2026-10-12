@@ -1,7 +1,7 @@
-
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
+  // CONTAINER
   safeArea: {
     flex: 1,
     backgroundColor: '#F0F0F0',
@@ -13,11 +13,11 @@ const styles = StyleSheet.create({
 
   conteudo: {
     paddingHorizontal: 18,
-    paddingTop: 18,
+    paddingTop: 2,
     paddingBottom: 35,
   },
 
-  // Cabeçalho superior
+  // CABEÇALHO SUPERIOR
   topoPagina: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 17,
     color: '#202820',
   },
@@ -53,7 +54,7 @@ const styles = StyleSheet.create({
     width: 42,
   },
 
-  // Card de identificação
+  // CARD DE IDENTIFICAÇÃO
   cabecalho: {
     backgroundColor: '#FFFFFF',
     borderRadius: 18,
@@ -88,6 +89,7 @@ const styles = StyleSheet.create({
 
   titulo: {
     fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 15,
     color: '#202820',
   },
@@ -118,19 +120,61 @@ const styles = StyleSheet.create({
 
   botaoOutrosTexto: {
     fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 10,
     color: '#249057',
   },
 
-  // Títulos das seções
+  // TÍTULOS DAS SEÇÕES
   secaoTitulo: {
     fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 16,
     color: '#202820',
     marginBottom: 13,
   },
 
-  // Leituras atuais
+  // Compatibilidade com os estilos usados no index.js
+  section: {
+    marginBottom: 0,
+  },
+
+  tituloSecao: {
+    fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
+    fontSize: 16,
+    color: '#202820',
+    marginBottom: 8,
+  },
+
+  // ALERTAS
+  alertCard: {
+    width: '100%',
+    minHeight: 70,
+    backgroundColor: '#FFF0D9',
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderLeftWidth: 4,
+    borderLeftColor: '#F59E0B',
+    marginTop: 12,
+    marginBottom: 25,
+  },
+
+  alertIcone: {
+    marginRight: 12,
+  },
+
+  alertText: {
+    flex: 1,
+    fontFamily: 'PlusJakartaSans-Regular',
+    fontSize: 14,
+    color: '#444444',
+  },
+
+  // LEITURAS ATUAIS
   leiturasLinha: {
     flexDirection: 'row',
     marginHorizontal: -5,
@@ -161,13 +205,15 @@ const styles = StyleSheet.create({
   },
 
   leituraLabel: {
-    fontFamily: 'PlusJakartaSans-Regular',
+    fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 11,
     color: '#777777',
   },
 
   leituraValor: {
     fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 23,
     color: '#202820',
     marginTop: 5,
@@ -180,7 +226,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
-  // Bateria
+  // BATERIA
   bateriaCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -217,13 +263,15 @@ const styles = StyleSheet.create({
   },
 
   bateriaTitulo: {
-    fontFamily: 'PlusJakartaSans-Regular',
+    fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 12,
     color: '#555555',
   },
 
   bateriaValor: {
     fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 13,
     color: '#249057',
   },
@@ -241,7 +289,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  // Médias do histórico
+  // MÉDIAS DO HISTÓRICO
   mediasLinha: {
     flexDirection: 'row',
     marginHorizontal: -5,
@@ -262,13 +310,15 @@ const styles = StyleSheet.create({
   },
 
   mediaLabel: {
-    fontFamily: 'PlusJakartaSans-Regular',
+    fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 11,
     color: '#777777',
   },
 
   mediaValor: {
     fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 22,
     marginTop: 8,
   },
@@ -280,7 +330,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 
-  // Gráficos
+  // GRÁFICOS
   graficoCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 18,
@@ -314,6 +364,7 @@ const styles = StyleSheet.create({
 
   graficoTitulo: {
     fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 14,
     color: '#202820',
   },
@@ -435,11 +486,12 @@ const styles = StyleSheet.create({
 
   mediaGrafico: {
     fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 12,
     color: '#333333',
   },
 
-  // Cabeçalho do histórico
+  // CABEÇALHO DO HISTÓRICO
   historicoCabecalho: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -474,11 +526,12 @@ const styles = StyleSheet.create({
 
   historicoContadorTexto: {
     fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 12,
     color: '#249057',
   },
 
-  // Itens do histórico
+  // ITENS DO HISTÓRICO
   historicoCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -513,6 +566,7 @@ const styles = StyleSheet.create({
 
   historicoHorario: {
     fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 12,
     color: '#333333',
   },
@@ -538,12 +592,13 @@ const styles = StyleSheet.create({
 
   historicoMedicaoTexto: {
     fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 12,
     color: '#333333',
     marginLeft: 5,
   },
 
-  // Histórico vazio
+  // HISTÓRICO VAZIO
   vazioCard: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -555,6 +610,7 @@ const styles = StyleSheet.create({
 
   vazioTitulo: {
     fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
     fontSize: 14,
     color: '#444444',
     marginTop: 12,

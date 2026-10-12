@@ -27,7 +27,7 @@ export default function Support() {
   const [modalAnexo, setModalAnexo] = useState(false);
 
   const tiposProblema = [
-    'Falha no sistema',
+    'Falha no protótipo',
     'Problema com sensor',
     'Erro no aplicativo',
     'Outro',

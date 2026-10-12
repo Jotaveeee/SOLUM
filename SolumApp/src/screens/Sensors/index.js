@@ -227,7 +227,6 @@ export default function SensoresScreen({ navigation, route }) {
   };
 
   const abrirDetalhes = (dispositivo) => {
-    console.log('Detalhes do dispositivo:', dispositivo);
     navigation.navigate('SensorDetalhes', {
       dispositivoId: dispositivo.id,
       dispositivoNome: dispositivo.nome,
@@ -267,7 +266,11 @@ export default function SensoresScreen({ navigation, route }) {
             onPress={() => navigation.navigate('Fazendas')}
             activeOpacity={0.7}
           >
-            <Text style={styles.backIcon}>‹</Text>
+            <Ionicons
+              name="arrow-back"
+              size={26}
+              color="#000000"
+            />
           </TouchableOpacity>
 
           <View style={styles.headerText}>

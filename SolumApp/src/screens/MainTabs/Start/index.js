@@ -140,16 +140,7 @@ export default function Start() {
         </Text>
       </View>
 
-      {/* ALERTAS */}
-      <View style={styles.section}>
-        <Text style={styles.tituloSecao}>Alertas</Text>
-
-        <View style={styles.alertCard}>
-          <Text style={styles.alertText}>
-            Você não possui novos alertas.
-          </Text>
-        </View>
-      </View>
+      <View style={styles.linhaHorizontal} />
 
       {/* FAZENDAS */}
       <View style={styles.fazendasSection}>

@@ -250,7 +250,7 @@ export default function Register() {
                 ) : (
 
                   <Text style={styles.buttonText2}>
-                    CRIAR CONTA →
+                    CRIAR CONTA
                   </Text>
 
                 )}

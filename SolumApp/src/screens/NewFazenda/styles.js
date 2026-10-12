@@ -72,7 +72,7 @@ export default StyleSheet.create({
   inputGroup: {
     width: '100%',
 
-    gap: 5,
+    gap: 15,
   },
 
   subtitulo: {
@@ -105,7 +105,7 @@ export default StyleSheet.create({
 
     borderRadius: 25,
 
-    marginTop: 50,
+    marginTop: 35,
 
     overflow: 'hidden',
   },
