@@ -41,10 +41,13 @@ export default StyleSheet.create({
     width: 45,
     height: 45,
 
-    borderRadius: 23,
+    borderRadius: 12,
 
-    backgroundColor: '#e2e2e2',
-
+    backgroundColor: '#fff',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
     justifyContent: 'center',
     alignItems: 'center',
 

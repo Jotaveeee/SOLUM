@@ -115,7 +115,7 @@ export default function FazendasScreen({ navigation }) {
             onPress={() => navigation.navigate('MainTabs')}
             activeOpacity={0.7}
           >
-            <Text style={styles.backIcon}>‹</Text>
+            <Ionicons name="arrow-back" size={26} color="#000" />
           </TouchableOpacity>
         </View>
 

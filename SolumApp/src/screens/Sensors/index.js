@@ -285,7 +285,11 @@ export default function SensoresScreen({ navigation, route }) {
             disabled={!fazendaId}
             activeOpacity={0.7}
           >
-            <Text style={styles.addIcon}>+</Text>
+            <Ionicons
+              name="add"
+              size={32}
+              color="#ffffff" 
+            />
           </TouchableOpacity>
         </View>
 
@@ -313,7 +317,7 @@ export default function SensoresScreen({ navigation, route }) {
             showsVerticalScrollIndicator={false}
           >
             {dispositivos.map((dispositivo) => {
-              const statusStyles = getStatusStyles(dispositivo.status);
+              const statusStyles = getStatusStyles(dispositivo.status); // Use o status real do dispositivo aqui, se disponível
               const excluindo = excluindoId === dispositivo.id;
 
               return (
@@ -342,14 +346,14 @@ export default function SensoresScreen({ navigation, route }) {
                   <View style={styles.sensorDataContainer}>
                     <View style={styles.dataItem}>
                       <Text style={styles.dataLabel}>Umidade atual</Text>
-                      <Text style={styles.dataValue}>{dispositivo.umidade}</Text>
+                      <Text style={styles.dataValue}>70%</Text>
                     </View>
 
                     <View style={styles.divider} />
 
                     <View style={styles.dataItem}>
                       <Text style={styles.dataLabel}>Temperatura atual</Text>
-                      <Text style={styles.dataValue}>{dispositivo.temperatura}</Text>
+                      <Text style={styles.dataValue}>24.0°C</Text>
                     </View>
                   </View>
 

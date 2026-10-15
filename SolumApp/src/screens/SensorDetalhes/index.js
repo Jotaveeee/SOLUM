@@ -17,20 +17,20 @@ export default function SensorDetalhes({ route, navigation }) {
   // Dados fictícios para testar a interface.
   // Depois, substitua pelos dados retornados pela API.
   const sensor = {
-    umidade: 68,
-    temperatura: 24.5,
-    bateria: 87,
-    ultimaAtualizacao: '09/10/2026 às 20:30',
+    umidade: 70,
+    temperatura: 24.0,
+    bateria: 56,
+    ultimaAtualizacao: '20/10/2026 às 20:30',
   };
 
   const historico = [
-    { id: '1', horario: '14:00', data: '09/10/2026', umidade: 52, temperatura: 22.4 },
-    { id: '2', horario: '15:00', data: '09/10/2026', umidade: 57, temperatura: 23.1 },
-    { id: '3', horario: '16:00', data: '09/10/2026', umidade: 61, temperatura: 24.2 },
-    { id: '4', horario: '17:00', data: '09/10/2026', umidade: 64, temperatura: 25.1 },
-    { id: '5', horario: '18:00', data: '09/10/2026', umidade: 72, temperatura: 26.3 },
-    { id: '6', horario: '19:00', data: '09/10/2026', umidade: 70, temperatura: 25.4 },
-    { id: '7', horario: '20:00', data: '09/10/2026', umidade: 68, temperatura: 24.5 },
+    { id: '1', horario: '14:00', data: '20/10/2026', umidade: 55, temperatura: 22.4 },
+    { id: '2', horario: '15:00', data: '20/10/2026', umidade: 57, temperatura: 23.1 },
+    { id: '3', horario: '16:00', data: '20/10/2026', umidade: 61, temperatura: 24.2 },
+    { id: '4', horario: '17:00', data: '20/10/2026', umidade: 64, temperatura: 25.1 },
+    { id: '5', horario: '18:00', data: '20/10/2026', umidade: 72, temperatura: 26.3 },
+    { id: '6', horario: '19:00', data: '20/10/2026', umidade: 70, temperatura: 25.4 },
+    { id: '7', horario: '20:00', data: '20/10/2026', umidade: 67, temperatura: 27.0 },
   ];
 
   const formatarNumero = (valor, casas = 1) =>
@@ -213,7 +213,7 @@ export default function SensorDetalhes({ route, navigation }) {
             <View style={styles.cabecalhoIcone}>
               <Ionicons
                 name="leaf-outline"
-                size={25}
+                size={26}
                 color="#249057"
               />
             </View>

@@ -102,7 +102,7 @@ export default function Register() {
         [
           {
             text: 'OK',
-            onPress: () => navigation.replace('MainTabs'),
+            onPress: () => navigation.replace('Start'),
           },
         ]
       );
