@@ -14,6 +14,7 @@ import styles from './styles';
 import { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import * as SecureStore from 'expo-secure-store';
 
 import { API_URL } from '../../services/api';
 
