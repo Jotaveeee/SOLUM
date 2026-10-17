@@ -105,7 +105,7 @@ export default function SensoresScreen({ navigation, route }) {
 
   useEffect(() => {
     carregarDados();
-    const interval = setInterval(carregarDados, 5000);
+    const interval = setInterval(carregarDados, 30000);
     return () => clearInterval(interval);
   }, [fazendaId]);
 

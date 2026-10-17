@@ -157,16 +157,28 @@ export default function SensorDetalhes({ route, navigation }) {
       : '--';
 
   const alertasIndicadores = [];
-  if (Number.isFinite(sensor.umidade) && sensor.umidade < 40) {
+  const umidadeCritica = Number.isFinite(sensor.umidade) && (sensor.umidade < 20 || sensor.umidade > 80);
+  const umidadeAtencao = Number.isFinite(sensor.umidade) &&
+    ((sensor.umidade >= 20 && sensor.umidade < 40) || (sensor.umidade > 73 && sensor.umidade < 80));
+  if (umidadeCritica || umidadeAtencao) {
     alertasIndicadores.push({
-      tipo: sensor.umidade < 20 ? 'critical' : 'warning',
-      texto: `Umidade ${sensor.umidade < 20 ? 'crítica' : 'baixa'}: ${sensor.umidade}%`,
+      tipo: umidadeCritica ? 'critical' : 'warning',
+      texto: umidadeCritica
+        ? `Umidade do solo crítica ${sensor.umidade < 20 ? 'baixa' : 'alta'} · ${sensor.umidade}%`
+        : sensor.umidade < 40
+          ? `Umidade do solo baixa · ${sensor.umidade}%`
+          : `Umidade do solo alta · ${sensor.umidade}%`,
     });
   }
-  if (Number.isFinite(sensor.temperatura) && sensor.temperatura >= 35) {
+  if (Number.isFinite(sensor.temperatura) && (sensor.temperatura < 20 || sensor.temperatura > 30)) {
+    const temperaturaCritica = sensor.temperatura >= 40;
     alertasIndicadores.push({
-      tipo: sensor.temperatura >= 40 ? 'critical' : 'warning',
-      texto: `Temperatura ${sensor.temperatura >= 40 ? 'crítica' : 'elevada'}: ${formatarNumero(sensor.temperatura)}°C`,
+      tipo: temperaturaCritica ? 'critical' : 'warning',
+      texto: temperaturaCritica
+        ? `Temperatura crítica · ${formatarNumero(sensor.temperatura)}°C`
+        : sensor.temperatura < 20
+          ? `Temperatura baixa · ${formatarNumero(sensor.temperatura)}°C`
+          : `Temperatura elevada · ${formatarNumero(sensor.temperatura)}°C`,
     });
   }
   const alertaCritico = alertasIndicadores.some((alerta) => alerta.tipo === 'critical');

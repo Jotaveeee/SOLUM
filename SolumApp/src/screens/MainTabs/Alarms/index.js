@@ -240,7 +240,7 @@ export default function Alarmes() {
               <Ionicons name="checkmark-circle-outline" size={38} color={colors.primary} />
               <Text style={styles.estadoVazioTitulo}>Nenhum alerta ativo</Text>
               <Text style={styles.estadoVazioDescricao}>
-                Alertas de umidade abaixo de 40% ou temperatura a partir de 35 °C aparecerão aqui.
+                Alertas de umidade do solo e temperatura fora das faixas definidas aparecerão aqui.
               </Text>
             </View>
           )}

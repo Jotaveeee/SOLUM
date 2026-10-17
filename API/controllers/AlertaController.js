@@ -4,9 +4,12 @@ const Dispositivo = require("../models/Dispositivo");
 const Leitura = require("../models/Leitura");
 
 const UMIDADE_CRITICA = 20;
-const UMIDADE_ATENCAO = 40;
+const UMIDADE_ATENCAO_MINIMA = 40;
+const UMIDADE_ATENCAO_MAXIMA = 73;
+const UMIDADE_CRITICA_MAXIMA = 80;
 const TEMPERATURA_CRITICA = 40;
-const TEMPERATURA_ATENCAO = 35;
+const TEMPERATURA_ATENCAO_MINIMA = 20;
+const TEMPERATURA_ATENCAO_MAXIMA = 30;
 
 const avaliarIndicador = (campo, valor) => {
     if (!Number.isFinite(valor)) return null;
@@ -16,20 +19,40 @@ const avaliarIndicador = (campo, valor) => {
             return {
                 severidade: "critical",
                 campo,
+                condicao: "abaixo-critico",
                 nome: "Umidade do solo",
                 valor,
-                unidade: "%",
-                descricao: `Crítico: abaixo de ${UMIDADE_CRITICA}%`
+                unidade: "%"
             };
         }
-        if (valor < UMIDADE_ATENCAO) {
+        if (valor < UMIDADE_ATENCAO_MINIMA) {
             return {
                 severidade: "warning",
                 campo,
+                condicao: "abaixo-ideal",
                 nome: "Umidade do solo",
                 valor,
-                unidade: "%",
-                descricao: `Atenção: abaixo de ${UMIDADE_ATENCAO}%`
+                unidade: "%"
+            };
+        }
+        if (valor > UMIDADE_CRITICA_MAXIMA) {
+            return {
+                severidade: "critical",
+                campo,
+                condicao: "acima-critico",
+                nome: "Umidade do solo",
+                valor,
+                unidade: "%"
+            };
+        }
+        if (valor > UMIDADE_ATENCAO_MAXIMA) {
+            return {
+                severidade: "warning",
+                campo,
+                condicao: "acima-ideal",
+                nome: "Umidade do solo",
+                valor,
+                unidade: "%"
             };
         }
         return null;
@@ -40,20 +63,30 @@ const avaliarIndicador = (campo, valor) => {
             return {
                 severidade: "critical",
                 campo,
+                condicao: "acima-critico",
                 nome: "Temperatura",
                 valor,
-                unidade: "°C",
-                descricao: `Crítico: a partir de ${TEMPERATURA_CRITICA}°C`
+                unidade: "°C"
             };
         }
-        if (valor >= TEMPERATURA_ATENCAO) {
+        if (valor < TEMPERATURA_ATENCAO_MINIMA) {
             return {
                 severidade: "warning",
                 campo,
+                condicao: "abaixo-ideal",
                 nome: "Temperatura",
                 valor,
-                unidade: "°C",
-                descricao: `Atenção: a partir de ${TEMPERATURA_ATENCAO}°C`
+                unidade: "°C"
+            };
+        }
+        if (valor > TEMPERATURA_ATENCAO_MAXIMA) {
+            return {
+                severidade: "warning",
+                campo,
+                condicao: "acima-ideal",
+                nome: "Temperatura",
+                valor,
+                unidade: "°C"
             };
         }
     }
@@ -92,10 +125,14 @@ const agruparAlertas = (dispositivos, leituras) => {
         });
 
         grupos.forEach((metricas, severidade) => {
-            const camposOrdenados = metricas.map((metrica) => metrica.campo).sort();
-            const fingerprint = `${severidade}:${camposOrdenados.join("+")}`;
+            const condicoesOrdenadas = metricas
+                .map((metrica) => `${metrica.campo}:${metrica.condicao}`)
+                .sort();
+            const fingerprint = `${severidade}:${condicoesOrdenadas.join("+")}`;
             const nomes = metricas.map((metrica) => metrica.nome);
             const somenteTemperatura = metricas.length === 1 && metricas[0].campo === "temperatura";
+            const somenteUmidade = metricas.length === 1 && metricas[0].campo === "umidadeSolo";
+            const unicaMetrica = metricas[0];
 
             alertas.push({
                 id: `${dispositivo._id}:${fingerprint}`,
@@ -108,10 +145,12 @@ const agruparAlertas = (dispositivos, leituras) => {
                 titulo: nomes.length > 1
                     ? `Múltiplos indicadores em nível ${severidade === "critical" ? "crítico" : "de atenção"}`
                     : somenteTemperatura
-                        ? `Temperatura ${severidade === "critical" ? "crítica" : "elevada"}`
-                        : `Umidade do solo ${severidade === "critical" ? "crítica" : "baixa"}`,
+                        ? `Temperatura ${severidade === "critical" ? "crítica" : unicaMetrica.condicao === "abaixo-ideal" ? "baixa" : "elevada"}`
+                        : somenteUmidade
+                            ? `Umidade do solo ${severidade === "critical" ? "crítica" : unicaMetrica.condicao === "acima-ideal" ? "alta" : "baixa"}`
+                            : "Alerta do sensor",
                 descricao: metricas
-                    .map((metrica) => `${metrica.nome}: ${metrica.valor}${metrica.unidade} (${metrica.descricao})`)
+                    .map((metrica) => `${metrica.nome} ${metrica.condicao.startsWith("abaixo") ? "baixa" : "alta"}: ${metrica.valor}${metrica.unidade}`)
                     .join(" · "),
                 icone: nomes.length > 1
                     ? "warning-outline"
