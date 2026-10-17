@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -41,8 +41,11 @@ export default function Alarmes() {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
   const [resolvendoId, setResolvendoId] = useState(null);
+  const carregandoRef = useRef(false);
 
   const carregarAlarmes = useCallback(async (mostrarCarregamento = false) => {
+    if (carregandoRef.current) return;
+    carregandoRef.current = true;
     if (mostrarCarregamento) setLoading(true);
 
     try {
@@ -63,6 +66,7 @@ export default function Alarmes() {
     } catch (error) {
       setErro(error.message || 'Não foi possível carregar os alertas.');
     } finally {
+      carregandoRef.current = false;
       setLoading(false);
     }
   }, []);

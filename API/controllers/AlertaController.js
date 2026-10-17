@@ -97,14 +97,13 @@ const avaliarIndicador = (campo, valor) => {
 const agruparAlertas = (dispositivos, leituras) => {
     const leituraMaisRecente = new Map();
 
-    [...leituras]
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .forEach((leitura) => {
-            const dispositivoId = String(leitura.dispositivo);
-            if (!leituraMaisRecente.has(dispositivoId)) {
-                leituraMaisRecente.set(dispositivoId, leitura);
-            }
-        });
+    leituras.forEach((leitura) => {
+        const dispositivoId = String(leitura.dispositivo);
+        const atual = leituraMaisRecente.get(dispositivoId);
+        if (!atual || leitura.createdAt > atual.createdAt) {
+            leituraMaisRecente.set(dispositivoId, leitura);
+        }
+    });
 
     const alertas = [];
 
@@ -187,12 +186,13 @@ class AlertaController {
             const dispositivos = await Dispositivo.find({
                 usuario: usuarioId,
                 ativo: true
-            }).populate("fazenda", "nome");
+            }).select("deviceId fazenda").populate("fazenda", "nome").lean();
             const dispositivoIds = dispositivos.map((dispositivo) => dispositivo._id);
             const leituras = dispositivoIds.length
                 ? await Leitura.aggregate([
                     { $match: { dispositivo: { $in: dispositivoIds } } },
                     { $sort: { dispositivo: 1, createdAt: -1, _id: -1 } },
+                    { $project: { dispositivo: 1, createdAt: 1, temperatura: 1, umidadeSolo: 1 } },
                     { $group: { _id: "$dispositivo", leitura: { $first: "$$ROOT" } } },
                     { $replaceRoot: { newRoot: "$leitura" } }
                 ])
@@ -202,7 +202,10 @@ class AlertaController {
                 alertasAtivos.map((alerta) => `${alerta.dispositivoId}:${alerta.fingerprint}`)
             );
 
-            const resolvidos = await AlertaResolvido.find({ usuario: usuarioId }).select("_id dispositivo fingerprint");
+            const resolvidos = dispositivoIds.length
+                ? await AlertaResolvido.find({ usuario: usuarioId, dispositivo: { $in: dispositivoIds } })
+                    .select("_id dispositivo fingerprint").lean()
+                : [];
             const resolvidosObsoletos = resolvidos
                 .filter((registro) => !fingerprintsAtivos.has(`${registro.dispositivo}:${registro.fingerprint}`))
                 .map((registro) => registro._id);

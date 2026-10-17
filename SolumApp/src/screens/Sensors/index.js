@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -31,6 +31,7 @@ export default function SensoresScreen({ navigation, route }) {
   const [criando, setCriando] = useState(false);
   const [apiKeyCriada, setApiKeyCriada] = useState(null);
   const [copiado, setCopiado] = useState(false);
+  const carregandoRef = useRef(false);
 
   const fazendaId = route.params?.fazendaId;
   const fazendaNome = route.params?.fazendaNome;
@@ -43,6 +44,9 @@ export default function SensoresScreen({ navigation, route }) {
   };
 
   const carregarDados = async () => {
+    if (carregandoRef.current) return;
+    carregandoRef.current = true;
+
     try {
       if (!fazendaId) {
         setErro('Fazenda não informada.');
@@ -76,12 +80,12 @@ export default function SensoresScreen({ navigation, route }) {
         return;
       }
 
-      const leituras = dataLeituras.leituras || [];
+      const leituraPorDispositivo = new Map(
+        (dataLeituras.leituras || []).map((leitura) => [leitura.dispositivo, leitura]),
+      );
 
       const listaCompleta = (dataDispositivos.dispositivos || []).map((dispositivo) => {
-        const leituraMaisRecente = leituras.find(
-          (leitura) => leitura.dispositivo === dispositivo.id
-        );
+        const leituraMaisRecente = leituraPorDispositivo.get(dispositivo.id);
 
         return {
           id: dispositivo.id,
@@ -99,6 +103,7 @@ export default function SensoresScreen({ navigation, route }) {
       console.error('Erro ao carregar dados:', error);
       setErro('Não foi possível conectar à API.');
     } finally {
+      carregandoRef.current = false;
       setLoading(false);
     }
   };

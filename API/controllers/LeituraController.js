@@ -108,7 +108,7 @@ class LeituraController {
             // Busca todos os dispositivos do usuário logado
             const dispositivos = await Dispositivo.find({
                 usuario: req.user._id
-            });
+            }).select("_id").lean();
 
             // Pega somente os IDs dos dispositivos
             const dispositivosIds = dispositivos.map(
@@ -120,6 +120,7 @@ class LeituraController {
                 ? await Leitura.aggregate([
                     { $match: { dispositivo: { $in: dispositivosIds } } },
                     { $sort: { createdAt: -1, _id: -1 } },
+                    { $project: { dispositivo: 1, createdAt: 1, temperatura: 1, umidadeSolo: 1, bateria: 1 } },
                     { $group: { _id: "$dispositivo", leitura: { $first: "$$ROOT" } } },
                     { $replaceRoot: { newRoot: "$leitura" } }
                 ])
