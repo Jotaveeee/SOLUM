@@ -19,4 +19,16 @@ router.get(
     LeituraController.me    
 );
 
+router.get(
+    "/dispositivo/:dispositivoId/resumo",
+    passport.authenticate("jwt", { session: false }),
+    LeituraController.resumoDispositivo
+);
+
+router.get(
+    "/dispositivo/:dispositivoId/historico",
+    passport.authenticate("jwt", { session: false }),
+    LeituraController.historicoDispositivo
+);
+
 module.exports = router;

@@ -29,4 +29,6 @@ const LeituraSchema = new mongoose.Schema({
     timestamps: true
 });
 
+LeituraSchema.index({ dispositivo: 1, createdAt: -1, _id: -1 });
+
 module.exports = mongoose.model("Leitura", LeituraSchema);

@@ -36,7 +36,7 @@ export default function SensoresScreen({ navigation, route }) {
   const fazendaNome = route.params?.fazendaNome;
 
   const calcularStatus = (umidade) => {
-    if (umidade === null || umidade === undefined) return 'Normal';
+    if (umidade === null || umidade === undefined) return 'Sem leitura';
     if (umidade < 20) return 'Alerta máximo';
     if (umidade < 40) return 'Atenção';
     return 'Normal';
@@ -71,7 +71,12 @@ export default function SensoresScreen({ navigation, route }) {
         return;
       }
 
-      const leituras = respLeituras.ok ? dataLeituras.leituras || [] : [];
+      if (!respLeituras.ok) {
+        setErro(dataLeituras.message || 'Erro ao buscar leituras dos sensores.');
+        return;
+      }
+
+      const leituras = dataLeituras.leituras || [];
 
       const listaCompleta = (dataDispositivos.dispositivos || []).map((dispositivo) => {
         const leituraMaisRecente = leituras.find(
@@ -247,6 +252,12 @@ export default function SensoresScreen({ navigation, route }) {
           statusText: styles.statusTextAtencao,
           bolinha: styles.bolinhaAtencao,
         };
+      case 'Sem leitura':
+        return {
+          status: styles.statusSemLeitura,
+          statusText: styles.statusTextSemLeitura,
+          bolinha: styles.bolinhaSemLeitura,
+        };
       default:
         return {
           status: styles.statusNormal,
@@ -346,14 +357,14 @@ export default function SensoresScreen({ navigation, route }) {
                   <View style={styles.sensorDataContainer}>
                     <View style={styles.dataItem}>
                       <Text style={styles.dataLabel}>Umidade atual</Text>
-                      <Text style={styles.dataValue}>70%</Text>
+                      <Text style={styles.dataValue}>{dispositivo.umidade}</Text>
                     </View>
 
                     <View style={styles.divider} />
 
                     <View style={styles.dataItem}>
                       <Text style={styles.dataLabel}>Temperatura atual</Text>
-                      <Text style={styles.dataValue}>24.0°C</Text>
+                      <Text style={styles.dataValue}>{dispositivo.temperatura}</Text>
                     </View>
                   </View>
 

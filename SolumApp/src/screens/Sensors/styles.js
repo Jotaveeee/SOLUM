@@ -188,6 +188,10 @@ export default StyleSheet.create({
     backgroundColor: 'rgba(36, 144, 87, 0.75)',
   },
 
+  bolinhaSemLeitura: {
+    backgroundColor: 'rgba(119, 119, 119, 0.55)',
+  },
+
   /*
    * BOLINHA - ATENÇÃO
    */
@@ -256,6 +260,15 @@ export default StyleSheet.create({
 
   statusTextNormal: {
     color: '#249057',
+  },
+
+  statusSemLeitura: {
+    backgroundColor: '#EEEEEE',
+    borderRadius: 20,
+  },
+
+  statusTextSemLeitura: {
+    color: '#777777',
   },
 
   /*

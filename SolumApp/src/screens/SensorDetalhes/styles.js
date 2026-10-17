@@ -309,6 +309,49 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
 
+  mediasCabecalho: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 14,
+  },
+
+  mediasTitulo: {
+    fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
+    fontSize: 15,
+    color: '#202820',
+  },
+
+  filtrosPeriodo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+
+  filtroPeriodo: {
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 10,
+    backgroundColor: '#FFFFFF',
+  },
+
+  filtroPeriodoAtivo: {
+    backgroundColor: '#249057',
+  },
+
+  filtroPeriodoTexto: {
+    fontFamily: 'PlusJakartaSans-Bold',
+    fontSize: 10,
+    color: '#6B7280',
+  },
+
+  filtroPeriodoTextoAtivo: {
+    color: '#FFFFFF',
+  },
+
   mediaLabel: {
     fontFamily: 'PlusJakartaSans-Bold',
     fontWeight: '700',
@@ -402,6 +445,11 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
 
+  graficoScrollConteudo: {
+    height: 190,
+    position: 'relative',
+  },
+
   linhasGrade: {
     position: 'absolute',
     top: 0,
@@ -427,8 +475,8 @@ const styles = StyleSheet.create({
   },
 
   barraColuna: {
-    flex: 1,
-    minWidth: 0,
+    width: 44,
+    flexShrink: 0,
     alignItems: 'center',
   },
 
@@ -453,6 +501,7 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: '#888888',
     marginTop: 9,
+    width: 44,
     textAlign: 'center',
   },
 
@@ -546,6 +595,24 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
     shadowRadius: 3,
+  },
+
+  botaoCarregarMais: {
+    minHeight: 46,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+    backgroundColor: '#E8F5EC',
+    borderRadius: 14,
+    marginBottom: 18,
+  },
+
+  textoCarregarMais: {
+    fontFamily: 'PlusJakartaSans-Bold',
+    fontWeight: '700',
+    fontSize: 12,
+    color: '#249057',
   },
 
   historicoData: {

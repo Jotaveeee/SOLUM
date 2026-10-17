@@ -181,6 +181,32 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
 
+  alarmePrincipal: {
+    flex: 1,
+    minWidth: 0,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+
+  botaoResolver: {
+    minWidth: 76,
+    height: 42,
+    marginLeft: 8,
+    paddingHorizontal: 8,
+    borderRadius: 14,
+    backgroundColor: '#E8F5EC',
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  textoResolver: {
+    fontFamily: fontNames.bold,
+    fontSize: 10,
+    color: colors.primary,
+  },
+
   alarmeIcone: {
     width: 43,
     height: 43,
@@ -279,6 +305,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 19,
     marginTop: 6,
+  },
+
+  botaoTentarNovamente: {
+    marginTop: 16,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: colors.primary,
+  },
+
+  botaoTentarNovamenteTexto: {
+    fontFamily: fontNames.bold,
+    fontSize: 12,
+    color: '#FFFFFF',
   },
 
   // Cartão clicável do histórico

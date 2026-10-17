@@ -7,6 +7,7 @@ const authRoutes = require("./routes/auth");
 const deviceRoutes = require("./routes/devices");
 const leituraRoutes = require("./routes/leituras");
 const fazendaRoutes = require("./routes/fazendas");
+const alertaRoutes = require("./routes/alertas");
 
 const app = express();
 
@@ -32,5 +33,7 @@ app.use("/devices", deviceRoutes);
 app.use("/leituras", leituraRoutes);
 
 app.use("/fazenda", fazendaRoutes);
+
+app.use("/alertas", alertaRoutes);
     
 module.exports = app;
