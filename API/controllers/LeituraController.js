@@ -167,7 +167,10 @@ class LeituraController {
                     { $match: { dispositivo: dispositivo._id, createdAt: { $gte: intervalo.inicio, $lte: intervalo.fim } } },
                     { $facet: {
                         resumo: [{ $group: { _id: null, total: { $sum: 1 }, mediaUmidade: { $avg: "$umidadeSolo" }, mediaTemperatura: { $avg: "$temperatura" }, menorTemperatura: { $min: "$temperatura" }, maiorTemperatura: { $max: "$temperatura" } } }],
-                        pontosGrafico: [
+                        pontosGrafico: periodo === "day" ? [
+                            { $sort: { createdAt: 1, _id: 1 } },
+                            { $project: { _id: 0, timestamp: "$createdAt", umidade: "$umidadeSolo", temperatura: 1 } }
+                        ] : [
                             { $group: { _id: { $dateTrunc: { date: "$createdAt", unit: unidade, timezone } }, umidade: { $avg: "$umidadeSolo" }, temperatura: { $avg: "$temperatura" }, quantidade: { $sum: 1 } } },
                             { $sort: { _id: 1 } },
                             { $project: { _id: 0, timestamp: "$_id", umidade: 1, temperatura: 1, quantidade: 1 } }
@@ -195,9 +198,13 @@ class LeituraController {
             const { dispositivoId } = req.params;
             const offset = Number(req.query.offset ?? 0);
             const limit = Math.min(10, Math.max(1, Number(req.query.limit ?? 10)));
+            const intervalo = req.query.inicio || req.query.fim ? obterIntervalo(req.query) : null;
 
             if (!mongoose.Types.ObjectId.isValid(dispositivoId)) {
                 return res.status(400).json({ message: "Sensor inválido." });
+            }
+            if ((req.query.inicio || req.query.fim) && !intervalo) {
+                return res.status(400).json({ message: "Intervalo do histórico inválido." });
             }
             if (!Number.isInteger(offset) || offset < 0 || !Number.isInteger(limit)) {
                 return res.status(400).json({ message: "Parâmetros do histórico inválidos." });
@@ -205,7 +212,10 @@ class LeituraController {
             const dispositivo = await Dispositivo.findOne({ _id: dispositivoId, usuario: req.user._id }).select("_id").lean();
             if (!dispositivo) return res.status(404).json({ message: "Sensor não encontrado." });
 
-            const filtro = { dispositivo: dispositivo._id };
+            const filtro = {
+                dispositivo: dispositivo._id,
+                ...(intervalo ? { createdAt: { $gte: intervalo.inicio, $lte: intervalo.fim } } : {})
+            };
             const [leituras, total] = await Promise.all([
                 Leitura.find(filtro).sort({ createdAt: -1, _id: -1 }).skip(offset).limit(limit).select("createdAt temperatura umidadeSolo bateria").lean(),
                 Leitura.countDocuments(filtro)

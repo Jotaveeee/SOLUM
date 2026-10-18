@@ -57,6 +57,17 @@ export default function SensorDetalhes({ route, navigation }) {
   };
 
   const intervaloPeriodo = useMemo(() => obterIntervalo(periodo), [periodo]);
+  const formatarDataCurta = (data) => data.toLocaleDateString('pt-BR');
+  const textoPeriodo = periodo === 'day'
+    ? `Hoje · ${formatarDataCurta(intervaloPeriodo.inicio)}`
+    : periodo === 'week'
+      ? `Últimos 7 dias · ${formatarDataCurta(intervaloPeriodo.inicio)} a ${formatarDataCurta(intervaloPeriodo.fim)}`
+      : `Este mês · 01/${String(intervaloPeriodo.inicio.getMonth() + 1).padStart(2, '0')}/${intervaloPeriodo.inicio.getFullYear()} a ${formatarDataCurta(intervaloPeriodo.fim)}`;
+  const descricaoPeriodo = periodo === 'day'
+    ? 'Mostrando todas as leituras de hoje.'
+    : periodo === 'week'
+      ? 'Médias diárias dos 6 dias anteriores e de hoje.'
+      : 'Médias diárias desde o primeiro dia deste mês.';
   const parametrosPeriodo = `inicio=${encodeURIComponent(intervaloPeriodo.inicio.toISOString())}&fim=${encodeURIComponent(intervaloPeriodo.fim.toISOString())}`;
 
   useFocusEffect(
@@ -78,7 +89,7 @@ export default function SensorDetalhes({ route, navigation }) {
           const headers = { Authorization: `Bearer ${token}` };
           const [respostaResumo, respostaHistorico] = await Promise.all([
             fetch(`${API_URL}/leituras/dispositivo/${dispositivoId}/resumo?${queryResumo}`, { headers }),
-            fetch(`${API_URL}/leituras/dispositivo/${dispositivoId}/historico?offset=0&limit=10`, { headers }),
+            fetch(`${API_URL}/leituras/dispositivo/${dispositivoId}/historico?offset=0&limit=10&${parametrosPeriodo}`, { headers }),
           ]);
           const dadosResumo = await respostaResumo.json().catch(() => ({}));
           const dadosHistorico = await respostaHistorico.json().catch(() => ({}));
@@ -127,7 +138,7 @@ export default function SensorDetalhes({ route, navigation }) {
       const token = await SecureStore.getItemAsync('token');
       if (!token) throw new Error('Você precisa estar logado.');
       const resposta = await fetch(
-        `${API_URL}/leituras/dispositivo/${dispositivoId}/historico?offset=${historico.length}&limit=10`,
+        `${API_URL}/leituras/dispositivo/${dispositivoId}/historico?offset=${historico.length}&limit=10&${parametrosPeriodo}`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       const dados = await resposta.json().catch(() => ({}));
@@ -199,6 +210,7 @@ export default function SensorDetalhes({ route, navigation }) {
     const titulo = isUmidade ? 'Umidade do solo' : 'Temperatura';
     const unidade = isUmidade ? '%' : '°C';
     const media = isUmidade ? mediaUmidade : mediaTemperatura;
+    const mostrarMedia = periodo !== 'day';
 
     const valoresEixo = isUmidade
       ? [100, 75, 50, 25, 0]
@@ -227,7 +239,7 @@ export default function SensorDetalhes({ route, navigation }) {
           <View style={styles.graficoTituloTexto}>
             <Text style={styles.graficoTitulo}>{titulo}</Text>
             <Text style={styles.graficoSubtitulo}>
-              Médias de todas as leituras · por {periodo === 'day' ? 'hora' : 'dia'}
+              {periodo === 'day' ? 'Todas as leituras · por horário' : 'Médias das leituras · por dia'}
             </Text>
           </View>
         </View>
@@ -261,6 +273,54 @@ export default function SensorDetalhes({ route, navigation }) {
               ))}
             </View>
 
+            {periodo === 'day' ? (
+              <View style={styles.linhaGraficoContainer}>
+                {pontosGrafico.map((item, index) => {
+                  const valor = isUmidade
+                    ? item.umidade
+                    : ((item.temperatura - minimoGrafico) / intervaloTemperatura) * 100;
+                  const y = 160 - Math.max(3, Math.min(100, valor)) * 1.6;
+                  const x = index * 44 + 22;
+                  const proximo = pontosGrafico[index + 1];
+                  let segmento = null;
+                  if (proximo) {
+                    const valorProximo = isUmidade
+                      ? proximo.umidade
+                      : ((proximo.temperatura - minimoGrafico) / intervaloTemperatura) * 100;
+                    const yProximo = 160 - Math.max(3, Math.min(100, valorProximo)) * 1.6;
+                    const dx = 44;
+                    const dy = yProximo - y;
+                    const comprimento = Math.sqrt(dx * dx + dy * dy);
+                    const angulo = `${Math.atan2(dy, dx)}rad`;
+                    segmento = (
+                      <View
+                        key={`${item.id}-segmento`}
+                        style={[styles.segmentoLinha, {
+                          width: comprimento,
+                          left: (x + (index + 1) * 44 + 22) / 2 - comprimento / 2,
+                          top: (y + yProximo) / 2 - 1,
+                          backgroundColor: cor,
+                          transform: [{ rotate: angulo }],
+                        }]}
+                      />
+                    );
+                  }
+                  return (
+                    <React.Fragment key={item.id}>
+                      {segmento}
+                      <View style={[styles.pontoLinha, {
+                        left: x - 4,
+                        top: y - 4,
+                        backgroundColor: cor,
+                      }]} />
+                      <Text style={[styles.barraHorario, styles.rotuloLinha]}>
+                        {item.horario}
+                      </Text>
+                    </React.Fragment>
+                  );
+                })}
+              </View>
+            ) : (
             <View style={styles.barrasContainer}>
               {pontosGrafico.map((item) => {
                 const altura = isUmidade
@@ -287,12 +347,13 @@ export default function SensorDetalhes({ route, navigation }) {
                     </View>
 
                     <Text style={styles.barraHorario}>
-                      {periodo === 'day' ? item.horario : item.data.slice(0, 5)}
+                      {item.data.slice(0, 5)}
                     </Text>
                   </View>
                 );
               })}
             </View>
+            )}
           </ScrollView>
         </View>
 
@@ -304,12 +365,12 @@ export default function SensorDetalhes({ route, navigation }) {
                 { backgroundColor: cor },
               ]}
             />
-            <Text style={styles.legendaTexto}>Leituras</Text>
+            <Text style={styles.legendaTexto}>{periodo === 'day' ? 'Leituras individuais' : 'Média por dia'}</Text>
           </View>
 
-          <Text style={styles.mediaGrafico}>
-            Média: {temLeiturasPeriodo ? `${formatarNumero(media)}${unidade}` : '--'}
-          </Text>
+          {mostrarMedia && <Text style={styles.mediaGrafico}>
+            Média do período: {temLeiturasPeriodo ? `${formatarNumero(media)}${unidade}` : '--'}
+          </Text>}
         </View>
       </View>
     );
@@ -507,7 +568,7 @@ export default function SensorDetalhes({ route, navigation }) {
 
         {/* Médias */}
         <View style={styles.mediasCabecalho}>
-          <Text style={styles.mediasTitulo}>Médias do histórico</Text>
+          <Text style={styles.mediasTitulo}>Histórico do sensor</Text>
           <View style={styles.filtrosPeriodo}>
             {[
               { id: 'day', label: 'Dia' },
@@ -536,6 +597,14 @@ export default function SensorDetalhes({ route, navigation }) {
                 </Text>
               </TouchableOpacity>
             ))}
+          </View>
+        </View>
+
+        <View style={styles.infoPeriodo}>
+          <Ionicons name="calendar-outline" size={18} color="#249057" />
+          <View style={styles.infoPeriodoTexto}>
+            <Text style={styles.infoPeriodoTitulo}>{textoPeriodo}</Text>
+            <Text style={styles.infoPeriodoDescricao}>{descricaoPeriodo}</Text>
           </View>
         </View>
 

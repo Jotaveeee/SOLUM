@@ -325,6 +325,35 @@ const styles = StyleSheet.create({
     color: '#202820',
   },
 
+  infoPeriodo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E8F5EC',
+    borderRadius: 13,
+    paddingHorizontal: 13,
+    paddingVertical: 11,
+    marginTop: -4,
+    marginBottom: 16,
+  },
+
+  infoPeriodoTexto: {
+    flex: 1,
+    marginLeft: 9,
+  },
+
+  infoPeriodoTitulo: {
+    fontFamily: 'PlusJakartaSans-Bold',
+    fontSize: 11,
+    color: '#246B42',
+  },
+
+  infoPeriodoDescricao: {
+    fontFamily: 'PlusJakartaSans-Regular',
+    fontSize: 10,
+    color: '#547260',
+    marginTop: 3,
+  },
+
   filtrosPeriodo: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -472,6 +501,35 @@ const styles = StyleSheet.create({
     right: 0,
     height: 190,
     flexDirection: 'row',
+  },
+
+  linhaGraficoContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 190,
+  },
+
+  segmentoLinha: {
+    position: 'absolute',
+    height: 2,
+    borderRadius: 2,
+  },
+
+  pontoLinha: {
+    position: 'absolute',
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#FFFFFF',
+  },
+
+  rotuloLinha: {
+    position: 'absolute',
+    top: 169,
+    left: -22,
   },
 
   barraColuna: {
