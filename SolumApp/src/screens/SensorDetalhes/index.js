@@ -430,12 +430,17 @@ export default function SensorDetalhes({ route, navigation }) {
               </Text>
             </View>
 
-            <TouchableOpacity activeOpacity={0.7}>
-              <View style={styles.botaoOutros}>
-                <Text style={styles.botaoOutrosTexto}>
-                  OUTROS
-                </Text>
-              </View>
+            <TouchableOpacity
+              style={styles.botaoConfiguracoes}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel="Configurações do sensor"
+              onPress={() => navigation.navigate('SensorConfiguracoes', {
+                dispositivoId,
+                dispositivoNome,
+              })}
+            >
+              <Ionicons name="settings-outline" size={20} color="#249057" />
             </TouchableOpacity>
           </View>
 

@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
 
   conteudo: {
     paddingHorizontal: 18,
-    paddingTop: 2,
+    paddingTop: 0,
     paddingBottom: 35,
   },
 
@@ -108,21 +108,14 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
 
-  botaoOutros: {
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderRadius: 9,
+  botaoConfiguracoes: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
     backgroundColor: '#E4F3E9',
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 7,
-  },
-
-  botaoOutrosTexto: {
-    fontFamily: 'PlusJakartaSans-Bold',
-    fontWeight: '700',
-    fontSize: 10,
-    color: '#249057',
   },
 
   // TÍTULOS DAS SEÇÕES
