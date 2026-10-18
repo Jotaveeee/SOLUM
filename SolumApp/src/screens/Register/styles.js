@@ -14,11 +14,14 @@ export default StyleSheet.create({
     flex: 1,
 
     backgroundColor: '#f0f0f0',
+  },
 
+  conteudo: {
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
-
     paddingHorizontal: 20,
+    paddingVertical: 24,
   },
 
   /*
@@ -27,14 +30,9 @@ export default StyleSheet.create({
   content: {
     width: '100%',
     maxWidth: 400,
-  
     alignItems: 'center',
-  
-    transform: [
-      {
-        translateY: -50,
-      },
-    ],
+    marginVertical: 16,
+    transform: [{ translateY: -50 }]
   },
 
   /*

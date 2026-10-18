@@ -6,6 +6,7 @@ import {
     ActivityIndicator,
     TextInput,
     KeyboardAvoidingView,
+    ScrollView,
     Platform,
     Alert,
 } from 'react-native';
@@ -83,7 +84,7 @@ export default function NewFazenda() {
             style={styles.keyboard}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-            <View style={styles.container}>
+            <ScrollView style={styles.container} contentContainerStyle={styles.conteudo} keyboardShouldPersistTaps="handled">
 
                 <View style={styles.content}>
 
@@ -147,7 +148,7 @@ export default function NewFazenda() {
 
                 </View>
 
-            </View>
+            </ScrollView>
         </KeyboardAvoidingView>
     );
 }

@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   TextInput,
   KeyboardAvoidingView,
+  ScrollView,
   Platform,
   Alert,
 } from 'react-native';
@@ -131,7 +132,7 @@ export default function Register() {
       style={styles.keyboard}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View style={styles.container}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.conteudo} keyboardShouldPersistTaps="handled">
 
         <View style={styles.content}>
 
@@ -264,7 +265,7 @@ export default function Register() {
 
         </View>
 
-      </View>
+      </ScrollView>
 
     </KeyboardAvoidingView>
   );

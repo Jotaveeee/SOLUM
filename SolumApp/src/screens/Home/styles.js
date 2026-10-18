@@ -8,7 +8,8 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    width: 300,
-    height: 300,
+    width: '65%',
+    maxWidth: 300,
+    aspectRatio: 1,
   },
 });

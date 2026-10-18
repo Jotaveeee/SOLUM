@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   TextInput,
   KeyboardAvoidingView,
+  ScrollView,
   Keyboard,
   Platform,
   Alert,
@@ -161,7 +162,7 @@ export default function Start() {
         </TouchableOpacity>
       )}
 
-      <View style={styles.container}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.conteudo} keyboardShouldPersistTaps="handled">
         <View style={styles.content}>
 
           {/* Logo */}
@@ -275,7 +276,7 @@ export default function Start() {
 
           </View>
         </View>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }

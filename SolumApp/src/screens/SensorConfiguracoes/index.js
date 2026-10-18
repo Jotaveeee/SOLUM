@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -43,6 +43,7 @@ const Opcoes = ({ valores, selecionado, aoSelecionar }) => (
 );
 
 export default function SensorConfiguracoes({ route, navigation }) {
+  const scrollViewRef = useRef(null);
   const dispositivoId = route?.params?.dispositivoId;
   const [configuracoes, setConfiguracoes] = useState({
     ...VALORES_PADRAO,
@@ -151,6 +152,7 @@ export default function SensorConfiguracoes({ route, navigation }) {
         temperatura: { ...dados.configuracoes.temperatura },
         umidade: { ...dados.configuracoes.umidade },
       });
+      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
       Alert.alert('Configurações salvas', 'As preferências deste protótipo foram atualizadas.');
     } catch (error) {
       setErro(error.message || 'Não foi possível salvar as configurações.');
@@ -163,6 +165,7 @@ export default function SensorConfiguracoes({ route, navigation }) {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#F0F0F0" />
       <ScrollView
+        ref={scrollViewRef}
         style={styles.container}
         contentContainerStyle={styles.conteudo}
         showsVerticalScrollIndicator={false}

@@ -6,6 +6,7 @@ import {
     ActivityIndicator,
     TextInput,
     KeyboardAvoidingView,
+    ScrollView,
     Platform,
 } from 'react-native';
 
@@ -22,7 +23,7 @@ export default function Redefine() {
             style={styles.keyboard}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-            <View style={styles.container}>
+            <ScrollView style={styles.container} contentContainerStyle={styles.conteudo} keyboardShouldPersistTaps="handled">
 
                 <View style={styles.content}>
 
@@ -89,7 +90,7 @@ export default function Redefine() {
 
                 </View>
 
-            </View>
+            </ScrollView>
         </KeyboardAvoidingView>
     );
 }

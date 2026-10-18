@@ -15,7 +15,11 @@ export default function Home() {
     }, [navigation]);
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/logosolum.png')} style={styles.logo} />
+      <Image
+        source={require('../../assets/logosolum.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
     </View>
   );
 }
