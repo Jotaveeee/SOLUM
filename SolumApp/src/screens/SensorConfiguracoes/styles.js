@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
+  // Fundo e rolagem da tela.
   safeArea: {
     flex: 1,
     backgroundColor: '#F0F0F0',
@@ -13,6 +14,8 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: 35,
   },
+
+  // Cabeçalho, título e botão de retorno.
   topoPagina: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -41,6 +44,8 @@ const styles = StyleSheet.create({
   espacoTopo: {
     width: 42,
   },
+
+  // Texto introdutório e cartões das seções.
   introducao: {
     fontFamily: 'PlusJakartaSans-Regular',
     fontSize: 12,
@@ -59,6 +64,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.04,
     shadowRadius: 3,
   },
+
+  // Títulos e ícones usados no início de cada seção.
   tituloSecaoLinha: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -81,6 +88,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#202820',
   },
+
+  // Rótulos, explicações e estado de carregamento/erro.
   rotulo: {
     fontFamily: 'PlusJakartaSans-Bold',
     fontWeight: '700',
@@ -103,6 +112,29 @@ const styles = StyleSheet.create({
     color: '#888888',
     marginTop: 3,
   },
+  estadoCarregamento: {
+    minHeight: 180,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mensagemEstado: {
+    fontFamily: 'PlusJakartaSans-Regular',
+    fontSize: 12,
+    color: '#777777',
+    marginTop: 10,
+  },
+  mensagemErro: {
+    fontFamily: 'PlusJakartaSans-Regular',
+    fontSize: 12,
+    lineHeight: 18,
+    color: '#B42318',
+    backgroundColor: '#FDE8E7',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+  },
+
+  // Campo para o nome personalizado do protótipo.
   entradaTexto: {
     height: 45,
     borderRadius: 12,
@@ -114,6 +146,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#202820',
   },
+
+  // Campos numéricos para limites de atenção e críticos.
   limitesLinha: {
     flexDirection: 'row',
     marginHorizontal: -5,
@@ -151,16 +185,7 @@ const styles = StyleSheet.create({
     color: '#999999',
     marginTop: 5,
   },
-  alternanciaLinha: {
-    minHeight: 50,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  alternanciaTexto: {
-    flex: 1,
-    paddingRight: 10,
-  },
+  // Separadores e opções de unidade e período.
   divisor: {
     height: 1,
     backgroundColor: '#EEEEEE',
@@ -189,6 +214,24 @@ const styles = StyleSheet.create({
     color: '#6B7280',
   },
   opcaoTextoAtivo: {
+    color: '#FFFFFF',
+  },
+
+  // Ação para persistir as configurações na API.
+  botaoSalvar: {
+    minHeight: 48,
+    borderRadius: 14,
+    backgroundColor: '#249057',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 3,
+  },
+  botaoSalvarDesativado: {
+    opacity: 0.7,
+  },
+  botaoSalvarTexto: {
+    fontFamily: 'PlusJakartaSans-Bold',
+    fontSize: 13,
     color: '#FFFFFF',
   },
 });

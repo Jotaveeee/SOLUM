@@ -10,6 +10,8 @@ class DeviceController {
         return {
             id: dispositivo._id,
             deviceId: dispositivo.deviceId,
+            nome: dispositivo.configuracoes?.nome || dispositivo.deviceId,
+            configuracoes: dispositivo.configuracoes,
             fazenda: dispositivo.fazenda,
             vinculado: dispositivo.vinculado,
             ativo: dispositivo.ativo,

@@ -16,11 +16,15 @@ import * as SecureStore from 'expo-secure-store';
 import { API_URL } from '../../services/api';
 
 export default function SensorDetalhes({ route, navigation }) {
-  const dispositivoNome =
-    route?.params?.dispositivoNome || 'Sensor de Solo';
   const dispositivoId = route?.params?.dispositivoId;
+  const [dispositivoNome, setDispositivoNome] = useState(route?.params?.dispositivoNome || 'Sensor de Solo');
   const [historico, setHistorico] = useState([]);
   const [periodo, setPeriodo] = useState('month');
+  const [configuracoes, setConfiguracoes] = useState({
+    unidade: 'C',
+    umidade: { atencaoMinima: 40, atencaoMaxima: 73, criticaMinima: 20, criticaMaxima: 80 },
+    temperatura: { atencaoMinima: 20, atencaoMaxima: 30, criticaMinima: 15, criticaMaxima: 40 },
+  });
   const [resumo, setResumo] = useState(null);
   const [pontosGrafico, setPontosGrafico] = useState([]);
   const [totalLeituras, setTotalLeituras] = useState(0);
@@ -69,6 +73,40 @@ export default function SensorDetalhes({ route, navigation }) {
       ? 'Médias diárias dos 6 dias anteriores e de hoje.'
       : 'Médias diárias desde o primeiro dia deste mês.';
   const parametrosPeriodo = `inicio=${encodeURIComponent(intervaloPeriodo.inicio.toISOString())}&fim=${encodeURIComponent(intervaloPeriodo.fim.toISOString())}`;
+
+  // Recarrega preferências ao voltar às telas de detalhes, sem sobrescrever filtros escolhidos durante a navegação.
+  useFocusEffect(
+    useCallback(() => {
+      let ativo = true;
+      const carregarConfiguracoes = async () => {
+        try {
+          if (!dispositivoId) return;
+          const token = await SecureStore.getItemAsync('token');
+          if (!token) return;
+          const resposta = await fetch(`${API_URL}/devices/${dispositivoId}/configuracoes`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const dados = await resposta.json().catch(() => ({}));
+          if (!resposta.ok) return;
+          if (ativo) {
+            const salvas = dados.configuracoes || {};
+            setConfiguracoes((atuais) => ({
+              ...atuais,
+              ...salvas,
+              umidade: { ...atuais.umidade, ...salvas.umidade },
+              temperatura: { ...atuais.temperatura, ...salvas.temperatura },
+            }));
+            setDispositivoNome(salvas.nome || route?.params?.dispositivoNome || 'Sensor de Solo');
+            setPeriodo(salvas.periodoPadrao || 'month');
+          }
+        } catch (error) {
+          // A tela de detalhes continua disponível mesmo se não for possível carregar as preferências.
+        }
+      };
+      carregarConfiguracoes();
+      return () => { ativo = false; };
+    }, [dispositivoId, route?.params?.dispositivoNome]),
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -128,7 +166,7 @@ export default function SensorDetalhes({ route, navigation }) {
 
       carregarLeituras();
       return () => { ativo = false; };
-    }, [dispositivoId, periodo, parametrosPeriodo]),
+    }, [dispositivoId, periodo, parametrosPeriodo, route?.params?.dispositivoNome]),
   );
 
   const carregarMaisLeituras = async () => {
@@ -167,29 +205,44 @@ export default function SensorDetalhes({ route, navigation }) {
       ? Number(valor).toFixed(casas).replace('.', ',')
       : '--';
 
+  const temperaturaParaExibicao = (valor) => configuracoes.unidade === 'F'
+    ? (Number(valor) * 9) / 5 + 32
+    : Number(valor);
+  const unidadeTemperatura = configuracoes.unidade === 'F' ? '°F' : '°C';
+
   const alertasIndicadores = [];
-  const umidadeCritica = Number.isFinite(sensor.umidade) && (sensor.umidade < 20 || sensor.umidade > 80);
-  const umidadeAtencao = Number.isFinite(sensor.umidade) &&
-    ((sensor.umidade >= 20 && sensor.umidade < 40) || (sensor.umidade > 73 && sensor.umidade < 80));
+  const limitesUmidade = configuracoes.umidade;
+  const umidadeCriticaBaixa = Number.isFinite(sensor.umidade) && sensor.umidade < limitesUmidade.criticaMinima;
+  const umidadeCriticaAlta = Number.isFinite(sensor.umidade) && sensor.umidade > limitesUmidade.criticaMaxima;
+  const umidadeAtencaoBaixa = Number.isFinite(sensor.umidade) && sensor.umidade < limitesUmidade.atencaoMinima;
+  const umidadeAtencaoAlta = Number.isFinite(sensor.umidade) && sensor.umidade > limitesUmidade.atencaoMaxima;
+  const umidadeCritica = umidadeCriticaBaixa || umidadeCriticaAlta;
+  const umidadeAtencao = !umidadeCritica && (umidadeAtencaoBaixa || umidadeAtencaoAlta);
   if (umidadeCritica || umidadeAtencao) {
     alertasIndicadores.push({
       tipo: umidadeCritica ? 'critical' : 'warning',
       texto: umidadeCritica
-        ? `Umidade do solo crítica ${sensor.umidade < 20 ? 'baixa' : 'alta'} · ${sensor.umidade}%`
-        : sensor.umidade < 40
+        ? `Umidade do solo crítica ${umidadeCriticaBaixa ? 'baixa' : 'alta'} · ${sensor.umidade}%`
+        : umidadeAtencaoBaixa
           ? `Umidade do solo baixa · ${sensor.umidade}%`
           : `Umidade do solo alta · ${sensor.umidade}%`,
     });
   }
-  if (Number.isFinite(sensor.temperatura) && (sensor.temperatura < 20 || sensor.temperatura > 30)) {
-    const temperaturaCritica = sensor.temperatura >= 40;
+  const limitesTemperatura = configuracoes.temperatura;
+  const temperaturaCriticaBaixa = Number.isFinite(sensor.temperatura) && sensor.temperatura < limitesTemperatura.criticaMinima;
+  const temperaturaCriticaAlta = Number.isFinite(sensor.temperatura) && sensor.temperatura > limitesTemperatura.criticaMaxima;
+  const temperaturaAtencaoBaixa = Number.isFinite(sensor.temperatura) && sensor.temperatura < limitesTemperatura.atencaoMinima;
+  const temperaturaAtencaoAlta = Number.isFinite(sensor.temperatura) && sensor.temperatura > limitesTemperatura.atencaoMaxima;
+  const temperaturaCritica = temperaturaCriticaBaixa || temperaturaCriticaAlta;
+  if (temperaturaCritica || temperaturaAtencaoBaixa || temperaturaAtencaoAlta) {
+    const valorTemperatura = temperaturaParaExibicao(sensor.temperatura);
     alertasIndicadores.push({
       tipo: temperaturaCritica ? 'critical' : 'warning',
       texto: temperaturaCritica
-        ? `Temperatura crítica · ${formatarNumero(sensor.temperatura)}°C`
-        : sensor.temperatura < 20
-          ? `Temperatura baixa · ${formatarNumero(sensor.temperatura)}°C`
-          : `Temperatura elevada · ${formatarNumero(sensor.temperatura)}°C`,
+        ? `Temperatura crítica ${temperaturaCriticaBaixa ? 'baixa' : 'alta'} · ${formatarNumero(valorTemperatura)}${unidadeTemperatura}`
+        : temperaturaAtencaoBaixa
+          ? `Temperatura baixa · ${formatarNumero(valorTemperatura)}${unidadeTemperatura}`
+          : `Temperatura elevada · ${formatarNumero(valorTemperatura)}${unidadeTemperatura}`,
     });
   }
   const alertaCritico = alertasIndicadores.some((alerta) => alerta.tipo === 'critical');
@@ -202,21 +255,23 @@ export default function SensorDetalhes({ route, navigation }) {
 
   const minimoGrafico = Math.floor(menorTemperatura - 2);
   const maximoGrafico = Math.ceil(maiorTemperatura + 2);
-  const intervaloTemperatura = maximoGrafico - minimoGrafico || 1;
+  const minimoGraficoExibicao = temperaturaParaExibicao(minimoGrafico);
+  const maximoGraficoExibicao = temperaturaParaExibicao(maximoGrafico);
+  const intervaloTemperatura = maximoGraficoExibicao - minimoGraficoExibicao || 1;
 
   const renderGrafico = (tipo) => {
     const isUmidade = tipo === 'umidade';
     const cor = isUmidade ? '#2785D8' : '#E46A45';
     const titulo = isUmidade ? 'Umidade do solo' : 'Temperatura';
-    const unidade = isUmidade ? '%' : '°C';
-    const media = isUmidade ? mediaUmidade : mediaTemperatura;
+    const unidade = isUmidade ? '%' : unidadeTemperatura;
+    const media = isUmidade ? mediaUmidade : temperaturaParaExibicao(mediaTemperatura);
     const mostrarMedia = periodo !== 'day';
 
     const valoresEixo = isUmidade
       ? [100, 75, 50, 25, 0]
       : [0, 25, 50, 75, 100].map(
           (percentual) =>
-            maximoGrafico -
+            maximoGraficoExibicao -
             (intervaloTemperatura * percentual) / 100,
         );
 
@@ -253,7 +308,7 @@ export default function SensorDetalhes({ route, navigation }) {
               >
                 {isUmidade
                   ? `${valor}%`
-                  : `${formatarNumero(valor, 0)}°`}
+                  : `${formatarNumero(valor, 0)}${unidadeTemperatura}`}
               </Text>
             ))}
           </View>
@@ -278,7 +333,7 @@ export default function SensorDetalhes({ route, navigation }) {
                 {pontosGrafico.map((item, index) => {
                   const valor = isUmidade
                     ? item.umidade
-                    : ((item.temperatura - minimoGrafico) / intervaloTemperatura) * 100;
+                    : ((temperaturaParaExibicao(item.temperatura) - minimoGraficoExibicao) / intervaloTemperatura) * 100;
                   const y = 160 - Math.max(3, Math.min(100, valor)) * 1.6;
                   const x = index * 44 + 22;
                   const proximo = pontosGrafico[index + 1];
@@ -286,7 +341,7 @@ export default function SensorDetalhes({ route, navigation }) {
                   if (proximo) {
                     const valorProximo = isUmidade
                       ? proximo.umidade
-                      : ((proximo.temperatura - minimoGrafico) / intervaloTemperatura) * 100;
+                      : ((temperaturaParaExibicao(proximo.temperatura) - minimoGraficoExibicao) / intervaloTemperatura) * 100;
                     const yProximo = 160 - Math.max(3, Math.min(100, valorProximo)) * 1.6;
                     const dx = 44;
                     const dy = yProximo - y;
@@ -325,7 +380,7 @@ export default function SensorDetalhes({ route, navigation }) {
               {pontosGrafico.map((item) => {
                 const altura = isUmidade
                   ? item.umidade
-                  : ((item.temperatura - minimoGrafico) /
+                  : ((temperaturaParaExibicao(item.temperatura) - minimoGraficoExibicao) /
                       intervaloTemperatura) *
                     100;
 
@@ -530,7 +585,7 @@ export default function SensorDetalhes({ route, navigation }) {
             </Text>
 
             <Text style={styles.leituraValor}>
-              {sensor.temperatura == null ? '--' : `${formatarNumero(sensor.temperatura)}°C`}
+              {sensor.temperatura == null ? '--' : `${formatarNumero(temperaturaParaExibicao(sensor.temperatura))}${unidadeTemperatura}`}
             </Text>
 
             <Text style={styles.leituraDescricao}>
@@ -644,7 +699,7 @@ export default function SensorDetalhes({ route, navigation }) {
                 { color: '#E46A45' },
               ]}
             >
-              {temLeiturasPeriodo ? `${formatarNumero(mediaTemperatura)}°C` : '--'}
+              {temLeiturasPeriodo ? `${formatarNumero(temperaturaParaExibicao(mediaTemperatura))}${unidadeTemperatura}` : '--'}
             </Text>
 
             <Text style={styles.mediaDescricao}>
@@ -735,7 +790,7 @@ export default function SensorDetalhes({ route, navigation }) {
                   />
 
                   <Text style={styles.historicoMedicaoTexto}>
-                    {formatarNumero(item.temperatura)}°C
+                    {formatarNumero(temperaturaParaExibicao(item.temperatura))}{unidadeTemperatura}
                   </Text>
                 </View>
               </View>

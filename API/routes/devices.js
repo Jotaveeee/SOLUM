@@ -2,6 +2,20 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const DeviceController = require("../controllers/DeviceController");
+const DeviceSettingsController = require("../controllers/DeviceSettingsController");
+
+// Configurações do protótipo autenticado.
+router.get(
+    "/:id/configuracoes",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => DeviceSettingsController.obter(req, res)
+);
+
+router.put(
+    "/:id/configuracoes",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => DeviceSettingsController.atualizar(req, res)
+);
 
 // Cria um novo dispositivo, já vinculado à fazenda do usuário
 router.post(

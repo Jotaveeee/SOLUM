@@ -36,10 +36,10 @@ export default function SensoresScreen({ navigation, route }) {
   const fazendaId = route.params?.fazendaId;
   const fazendaNome = route.params?.fazendaNome;
 
-  const calcularStatus = (umidade) => {
+  const calcularStatus = (umidade, limites = {}) => {
     if (umidade === null || umidade === undefined) return 'Sem leitura';
-    if (umidade < 20) return 'Alerta máximo';
-    if (umidade < 40) return 'Atenção';
+    if (umidade < (limites.criticaMinima ?? 20) || umidade > (limites.criticaMaxima ?? 80)) return 'Alerta máximo';
+    if (umidade < (limites.atencaoMinima ?? 40) || umidade > (limites.atencaoMaxima ?? 73)) return 'Atenção';
     return 'Normal';
   };
 
@@ -89,11 +89,15 @@ export default function SensoresScreen({ navigation, route }) {
 
         return {
           id: dispositivo.id,
-          nome: dispositivo.deviceId,
+          nome: dispositivo.nome || dispositivo.deviceId,
           local: dispositivo.fazenda?.nome || fazendaNome || 'Sem fazenda',
           umidade: leituraMaisRecente ? `${leituraMaisRecente.umidadeSolo}%` : '--',
-          temperatura: leituraMaisRecente ? `${leituraMaisRecente.temperatura}°C` : '--',
-          status: calcularStatus(leituraMaisRecente?.umidadeSolo),
+          temperatura: leituraMaisRecente
+            ? `${dispositivo.configuracoes?.unidade === 'F'
+              ? ((Number(leituraMaisRecente.temperatura) * 9) / 5 + 32).toFixed(1)
+              : leituraMaisRecente.temperatura}°${dispositivo.configuracoes?.unidade || 'C'}`
+            : '--',
+          status: calcularStatus(leituraMaisRecente?.umidadeSolo, dispositivo.configuracoes?.umidade),
         };
       });
 

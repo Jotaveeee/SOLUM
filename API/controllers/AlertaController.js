@@ -3,19 +3,16 @@ const AlertaResolvido = require("../models/AlertaResolvido");
 const Dispositivo = require("../models/Dispositivo");
 const Leitura = require("../models/Leitura");
 
-const UMIDADE_CRITICA = 20;
-const UMIDADE_ATENCAO_MINIMA = 40;
-const UMIDADE_ATENCAO_MAXIMA = 73;
-const UMIDADE_CRITICA_MAXIMA = 80;
-const TEMPERATURA_CRITICA = 40;
-const TEMPERATURA_ATENCAO_MINIMA = 20;
-const TEMPERATURA_ATENCAO_MAXIMA = 30;
-
-const avaliarIndicador = (campo, valor) => {
+const avaliarIndicador = (campo, valor, configuracoes = {}) => {
     if (!Number.isFinite(valor)) return null;
 
     if (campo === "umidadeSolo") {
-        if (valor < UMIDADE_CRITICA) {
+        const limites = configuracoes.umidade || {};
+        const criticaMinima = limites.criticaMinima ?? 20;
+        const criticaMaxima = limites.criticaMaxima ?? 80;
+        const atencaoMinima = limites.atencaoMinima ?? 40;
+        const atencaoMaxima = limites.atencaoMaxima ?? 73;
+        if (valor < criticaMinima) {
             return {
                 severidade: "critical",
                 campo,
@@ -25,7 +22,7 @@ const avaliarIndicador = (campo, valor) => {
                 unidade: "%"
             };
         }
-        if (valor < UMIDADE_ATENCAO_MINIMA) {
+        if (valor < atencaoMinima) {
             return {
                 severidade: "warning",
                 campo,
@@ -35,7 +32,7 @@ const avaliarIndicador = (campo, valor) => {
                 unidade: "%"
             };
         }
-        if (valor > UMIDADE_CRITICA_MAXIMA) {
+        if (valor > criticaMaxima) {
             return {
                 severidade: "critical",
                 campo,
@@ -45,7 +42,7 @@ const avaliarIndicador = (campo, valor) => {
                 unidade: "%"
             };
         }
-        if (valor > UMIDADE_ATENCAO_MAXIMA) {
+        if (valor > atencaoMaxima) {
             return {
                 severidade: "warning",
                 campo,
@@ -59,34 +56,42 @@ const avaliarIndicador = (campo, valor) => {
     }
 
     if (campo === "temperatura") {
-        if (valor >= TEMPERATURA_CRITICA) {
+        const limites = configuracoes.temperatura || {};
+        const unidadeFahrenheit = configuracoes.unidade === "F";
+        const valorExibido = unidadeFahrenheit ? (valor * 9) / 5 + 32 : valor;
+        const unidadeExibida = unidadeFahrenheit ? "°F" : "°C";
+        const criticaMinima = limites.criticaMinima ?? 15;
+        const criticaMaxima = limites.criticaMaxima ?? 40;
+        const atencaoMinima = limites.atencaoMinima ?? 20;
+        const atencaoMaxima = limites.atencaoMaxima ?? 30;
+        if (valor < criticaMinima || valor > criticaMaxima) {
             return {
                 severidade: "critical",
                 campo,
-                condicao: "acima-critico",
+                condicao: valor < criticaMinima ? "abaixo-critico" : "acima-critico",
                 nome: "Temperatura",
-                valor,
-                unidade: "°C"
+                valor: valorExibido,
+                unidade: unidadeExibida
             };
         }
-        if (valor < TEMPERATURA_ATENCAO_MINIMA) {
+        if (valor < atencaoMinima) {
             return {
                 severidade: "warning",
                 campo,
                 condicao: "abaixo-ideal",
                 nome: "Temperatura",
-                valor,
-                unidade: "°C"
+                valor: valorExibido,
+                unidade: unidadeExibida
             };
         }
-        if (valor > TEMPERATURA_ATENCAO_MAXIMA) {
+        if (valor > atencaoMaxima) {
             return {
                 severidade: "warning",
                 campo,
                 condicao: "acima-ideal",
                 nome: "Temperatura",
-                valor,
-                unidade: "°C"
+                valor: valorExibido,
+                unidade: unidadeExibida
             };
         }
     }
@@ -112,8 +117,8 @@ const agruparAlertas = (dispositivos, leituras) => {
         if (!leitura) return;
 
         const indicadores = [
-            avaliarIndicador("umidadeSolo", Number(leitura.umidadeSolo)),
-            avaliarIndicador("temperatura", Number(leitura.temperatura))
+            avaliarIndicador("umidadeSolo", Number(leitura.umidadeSolo), dispositivo.configuracoes),
+            avaliarIndicador("temperatura", Number(leitura.temperatura), dispositivo.configuracoes)
         ].filter(Boolean);
         const grupos = new Map();
 
@@ -137,7 +142,7 @@ const agruparAlertas = (dispositivos, leituras) => {
                 id: `${dispositivo._id}:${fingerprint}`,
                 fingerprint,
                 dispositivoId: String(dispositivo._id),
-                dispositivoNome: dispositivo.deviceId || "Sensor",
+                dispositivoNome: dispositivo.configuracoes?.nome || dispositivo.deviceId || "Sensor",
                 fazendaNome: dispositivo.fazenda?.nome || "Fazenda sem nome",
                 horario: leitura.createdAt,
                 tipo: severidade,
@@ -186,7 +191,7 @@ class AlertaController {
             const dispositivos = await Dispositivo.find({
                 usuario: usuarioId,
                 ativo: true
-            }).select("deviceId fazenda").populate("fazenda", "nome").lean();
+            }).select("deviceId fazenda configuracoes").populate("fazenda", "nome").lean();
             const dispositivoIds = dispositivos.map((dispositivo) => dispositivo._id);
             const leituras = dispositivoIds.length
                 ? await Leitura.aggregate([
