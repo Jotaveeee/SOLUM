@@ -29,7 +29,7 @@ export default function Perfil({ navigation }) {
               <Text style={styles.profileName}>Iago Guimarães</Text>
               <Text style={styles.profileFarm}>Fazenda Santa Clara</Text>
               <View style={styles.tag}>
-                <Text style={styles.tagText}>✨ Solum Pro</Text>
+                <Text style={styles.tagText}>Solum Pro</Text>
               </View>
             </View>
           </View>
