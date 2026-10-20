@@ -458,7 +458,7 @@ export default function SensorDetalhes({ route, navigation }) {
           </TouchableOpacity>
 
           <Text style={styles.tituloPagina}>
-            Detalhes do sensor
+            Detalhes dos sensores
           </Text>
 
           <View style={styles.espacoTopo} />
@@ -481,7 +481,7 @@ export default function SensorDetalhes({ route, navigation }) {
               </Text>
 
               <Text style={styles.subtitulo}>
-                Sensor de solo
+                SoloSync
               </Text>
             </View>
 
