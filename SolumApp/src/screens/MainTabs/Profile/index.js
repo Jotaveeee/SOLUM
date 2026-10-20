@@ -8,13 +8,13 @@ import { API_URL } from '../../../services/api';
 import styles from './styles';
 
 export default function Perfil({ navigation }) {
-  const [pushEnabled, setPushEnabled] = useState(true);
-  const [criticalEnabled, setCriticalEnabled] = useState(true);
+  const [notificacoesAtivadas, setNotificacoesAtivadas] = useState(true);
   const [email, setEmail] = useState('');
   const [nome, setNome] = useState('');
   const [nomeEditado, setNomeEditado] = useState('');
   const [modalNomeVisivel, setModalNomeVisivel] = useState(false);
   const [salvandoNome, setSalvandoNome] = useState(false);
+  const [excluindoConta, setExcluindoConta] = useState(false);
   const [fazendasCount, setFazendasCount] = useState(0);
   const [sensoresCount, setSensoresCount] = useState(0);
 
@@ -24,14 +24,16 @@ export default function Perfil({ navigation }) {
 
       async function carregarResumo() {
         try {
-          const [usuarioJson, token] = await Promise.all([
+          const [usuarioJson, token, notificacoesSalvas] = await Promise.all([
             SecureStore.getItemAsync('usuario'),
             SecureStore.getItemAsync('token'),
+            SecureStore.getItemAsync('notificacoesAtivadas'),
           ]);
           const usuario = usuarioJson ? JSON.parse(usuarioJson) : {};
           if (ativo) {
             setEmail(usuario?.email || '');
             setNome(usuario?.nome || '');
+            setNotificacoesAtivadas(notificacoesSalvas !== 'false');
           }
           if (!token) return;
 
@@ -56,6 +58,16 @@ export default function Perfil({ navigation }) {
       return () => { ativo = false; };
     }, [])
   );
+
+  const alterarNotificacoes = async (ativadas) => {
+    try {
+      await SecureStore.setItemAsync('notificacoesAtivadas', String(ativadas));
+      setNotificacoesAtivadas(ativadas);
+    } catch (error) {
+      console.error('Erro ao salvar preferência de notificações:', error);
+      Alert.alert('Erro', 'Não foi possível salvar essa preferência.');
+    }
+  };
 
   const abrirEdicaoNome = () => {
     setNomeEditado(nome);
@@ -106,8 +118,68 @@ export default function Perfil({ navigation }) {
     }
   };
 
-  const handleLogout = () => {
-    navigation.navigate('Register');
+  const handleLogout = async () => {
+    try {
+      await Promise.all([
+        SecureStore.deleteItemAsync('token'),
+        SecureStore.deleteItemAsync('usuario'),
+      ]);
+      navigation.replace('Start');
+    } catch (error) {
+      console.error('Erro ao limpar dados da conta:', error);
+      Alert.alert('Erro', 'Não foi possível limpar os dados da conta. Tente novamente.');
+    }
+  };
+
+  const excluirConta = () => {
+    Alert.alert(
+      'Excluir conta permanentemente?',
+      'Sua conta, fazendas, sensores cadastrados, leituras e alertas serão apagados. Esta ação não pode ser desfeita.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir conta',
+          style: 'destructive',
+          onPress: confirmarExclusaoConta,
+        },
+      ]
+    );
+  };
+
+  const confirmarExclusaoConta = async () => {
+    setExcluindoConta(true);
+    try {
+      const token = await SecureStore.getItemAsync('token');
+      if (!token) {
+        Alert.alert('Sessão expirada', 'Entre novamente para excluir a conta.');
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/auth/me`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        Alert.alert('Não foi possível excluir a conta', data.message || 'Tente novamente.');
+        return;
+      }
+
+      try {
+        await Promise.all([
+          SecureStore.deleteItemAsync('token'),
+          SecureStore.deleteItemAsync('usuario'),
+        ]);
+      } catch (error) {
+        console.error('Erro ao limpar dados locais após exclusão:', error);
+      }
+      navigation.replace('Start');
+    } catch (error) {
+      console.error('Erro ao excluir conta:', error);
+      Alert.alert('Erro', 'Não foi possível conectar ao servidor. A conta não foi excluída.');
+    } finally {
+      setExcluindoConta(false);
+    }
   };
 
   return (
@@ -129,10 +201,15 @@ export default function Perfil({ navigation }) {
             </View>
             <View style={styles.profileInfo}>
               <Text style={styles.profileName}>{nome || 'Nome não informado'}</Text>
-              <Text style={styles.profileFarm}>Fazenda Santa Clara</Text>
-              <TouchableOpacity style={styles.tag} activeOpacity={0.8}>
+              <TouchableOpacity
+                style={[styles.tag, excluindoConta && styles.deleteButtonDisabled]}
+                activeOpacity={0.8}
+                onPress={excluirConta}
+                disabled={excluindoConta}
+                accessibilityRole="button"
+              >
                 <Ionicons name="trash-outline" size={15} color="#EB5757" />
-                <Text style={styles.tagText}>Excluir conta</Text>
+                <Text style={styles.tagText}>{excluindoConta ? 'Excluindo…' : 'Excluir conta'}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -174,27 +251,14 @@ export default function Perfil({ navigation }) {
           <Text style={styles.sectionTitle}>Configurações</Text>
           <View style={styles.settingRow}>
             <View style={styles.settingText}>
-              <Text style={styles.settingTitle}>Notificações push</Text>
-              <Text style={styles.settingSubtitle}>Receba avisos no celular</Text>
+              <Text style={styles.settingTitle}>Notificações no celular</Text>
+              <Text style={styles.settingSubtitle}>Ative ou desative notificações do app no dispositivo</Text>
             </View>
             <Switch
               trackColor={{ false: '#E5E5EA', true: '#27AE60' }}
               thumbColor="#FFFFFF"
-              onValueChange={setPushEnabled}
-              value={pushEnabled}
-            />
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.settingRow}>
-            <View style={styles.settingText}>
-              <Text style={styles.settingTitle}>Somente alertas críticos</Text>
-              <Text style={styles.settingSubtitle}>Silencia avisos informativos</Text>
-            </View>
-            <Switch
-              trackColor={{ false: '#E5E5EA', true: '#27AE60' }}
-              thumbColor="#FFFFFF"
-              onValueChange={setCriticalEnabled}
-              value={criticalEnabled}
+              onValueChange={alterarNotificacoes}
+              value={notificacoesAtivadas}
             />
           </View>
         </View>
@@ -216,11 +280,11 @@ export default function Perfil({ navigation }) {
             <TextInput
               style={styles.nameInput}
               value={nomeEditado}
-              onChangeText={setNomeEditado}
+              onChangeText={(texto) => setNomeEditado(texto.replace(/[^a-zA-ZÀ-ÿ\s]/g, ''))}
               placeholder="Digite seu nome"
               autoCapitalize="words"
               autoFocus
-              maxLength={80}
+              maxLength={20}
               returnKeyType="done"
               onSubmitEditing={salvarNome}
             />

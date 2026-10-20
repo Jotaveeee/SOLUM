@@ -26,4 +26,11 @@ router.patch(
     AuthController.updateMe
 );
 
+// Exclui a conta autenticada e os dados associados
+router.delete(
+    "/me",
+    passport.authenticate("jwt", { session: false }),
+    AuthController.deleteMe
+);
+
 module.exports = router;

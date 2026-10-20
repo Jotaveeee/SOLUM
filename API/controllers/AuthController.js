@@ -1,4 +1,9 @@
 const Usuario = require("../models/Usuario");
+const Fazenda = require("../models/Fazenda");
+const Dispositivo = require("../models/Dispositivo");
+const Leitura = require("../models/Leitura");
+const AlertaResolvido = require("../models/AlertaResolvido");
+const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -9,6 +14,7 @@ class AuthController {
         this.login = this.login.bind(this);
         this.me = this.me.bind(this);
         this.updateMe = this.updateMe.bind(this);
+        this.deleteMe = this.deleteMe.bind(this);
     }
 
     gerarToken(id) {
@@ -203,9 +209,15 @@ class AuthController {
                 });
             }
 
-            if (nome.length > 80) {
+            if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(nome)) {
                 return res.status(400).json({
-                    message: "O nome deve ter no máximo 80 caracteres."
+                    message: "O nome pode conter apenas letras e espaços."
+                });
+            }
+
+            if (nome.length > 20) {
+                return res.status(400).json({
+                    message: "O nome deve ter no máximo 20 caracteres."
                 });
             }
 
@@ -222,6 +234,58 @@ class AuthController {
             return res.status(500).json({
                 message: "Erro interno do servidor."
             });
+        }
+    }
+
+    async deleteMe(req, res) {
+        let session;
+
+        try {
+            session = await mongoose.startSession();
+            const usuarioId = req.user._id;
+
+            await session.withTransaction(async () => {
+                const fazendas = await Fazenda.find({ usuario: usuarioId })
+                    .select("_id")
+                    .session(session)
+                    .lean();
+                const fazendaIds = fazendas.map((fazenda) => fazenda._id);
+                const filtroDispositivos = fazendaIds.length
+                    ? { $or: [{ usuario: usuarioId }, { fazenda: { $in: fazendaIds } }] }
+                    : { usuario: usuarioId };
+                const dispositivos = await Dispositivo.find(filtroDispositivos)
+                    .select("_id")
+                    .session(session)
+                    .lean();
+                const dispositivoIds = dispositivos.map((dispositivo) => dispositivo._id);
+
+                if (dispositivoIds.length) {
+                    await Leitura.deleteMany(
+                        { dispositivo: { $in: dispositivoIds } },
+                        { session }
+                    );
+                    await Dispositivo.deleteMany(
+                        { _id: { $in: dispositivoIds } },
+                        { session }
+                    );
+                }
+
+                await AlertaResolvido.deleteMany(
+                    dispositivoIds.length
+                        ? { $or: [{ usuario: usuarioId }, { dispositivo: { $in: dispositivoIds } }] }
+                        : { usuario: usuarioId },
+                    { session }
+                );
+                await Fazenda.deleteMany({ usuario: usuarioId }, { session });
+                await Usuario.deleteOne({ _id: usuarioId }, { session });
+            });
+
+            return res.status(200).json({ message: "Conta e dados associados excluídos com sucesso." });
+        } catch (error) {
+            console.error("Erro ao excluir conta:", error);
+            return res.status(500).json({ message: "Não foi possível excluir a conta. Nenhum dado foi removido." });
+        } finally {
+            if (session) await session.endSession();
         }
     }
 }

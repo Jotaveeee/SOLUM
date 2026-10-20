@@ -89,6 +89,9 @@ export default StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
+  deleteButtonDisabled: {
+    opacity: 0.6,
+  },
   editButton: {
     padding: 4,
   },
