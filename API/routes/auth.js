@@ -19,4 +19,11 @@ router.get(
     AuthController.me
 );
 
+// Atualiza os dados do usuário autenticado
+router.patch(
+    "/me",
+    passport.authenticate("jwt", { session: false }),
+    AuthController.updateMe
+);
+
 module.exports = router;

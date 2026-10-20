@@ -8,6 +8,7 @@ class AuthController {
         this.register = this.register.bind(this);
         this.login = this.login.bind(this);
         this.me = this.me.bind(this);
+        this.updateMe = this.updateMe.bind(this);
     }
 
     gerarToken(id) {
@@ -190,6 +191,38 @@ class AuthController {
         return res.status(200).json({
             usuario: this.formatarUsuario(req.user)
         });
+    }
+
+    async updateMe(req, res) {
+        try {
+            const nome = typeof req.body.nome === "string" ? req.body.nome.trim() : "";
+
+            if (!nome) {
+                return res.status(400).json({
+                    message: "Informe um nome válido."
+                });
+            }
+
+            if (nome.length > 80) {
+                return res.status(400).json({
+                    message: "O nome deve ter no máximo 80 caracteres."
+                });
+            }
+
+            req.user.nome = nome;
+            await req.user.save();
+
+            return res.status(200).json({
+                message: "Nome atualizado com sucesso.",
+                usuario: this.formatarUsuario(req.user)
+            });
+        } catch (error) {
+            console.error("Erro ao atualizar nome do usuário:", error);
+
+            return res.status(500).json({
+                message: "Erro interno do servidor."
+            });
+        }
     }
 }
 
