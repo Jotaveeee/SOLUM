@@ -338,12 +338,6 @@ export default StyleSheet.create({
 
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
-    justifyContent: 'flex-end',
-  },
-
-  modalOverlay: {
-    flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.25)',
     justifyContent: 'flex-end',
   },
@@ -375,10 +369,6 @@ export default StyleSheet.create({
     paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#E8E8E8',
-  },
-
-  modalIcone: {
-    width: 40,
   },
 
   modalTexto: {

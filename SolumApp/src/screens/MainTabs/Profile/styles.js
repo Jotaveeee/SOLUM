@@ -69,11 +69,6 @@ export default StyleSheet.create({
     color: '#1C1C1E',
     marginBottom: 2,
   },
-  profileFarm: {
-    fontSize: 14,
-    color: '#8E8E93',
-    marginBottom: 8,
-  },
   tag: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -146,10 +141,6 @@ export default StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '600',
-  },
-  editIcon: {
-    fontSize: 16,
-    color: '#8E8E93',
   },
   statsRow: {
     flexDirection: 'row',
@@ -234,31 +225,6 @@ export default StyleSheet.create({
     fontSize: 12,
     color: '#8E8E93',
   },
-  divider: {
-    height: 1,
-    backgroundColor: '#E5E5EA',
-    marginVertical: 16,
-  },
-  actionCard: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E5E5EA',
-    marginBottom: 32,
-  },
-  actionText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#1C1C1E',
-  },
-  actionIcon: {
-    fontSize: 20,
-    color: '#8E8E93',
-  },
   logoutButton: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -275,45 +241,5 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     marginLeft: 8,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E5EA',
-    backgroundColor: '#FFFFFF',
-  },
-  navItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  navItemActive: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#E8F5E9',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  navIcon: {
-    fontSize: 20,
-    marginBottom: 4,
-    opacity: 0.5,
-  },
-  navIconActive: {
-    fontSize: 20,
-    marginBottom: 4,
-    color: '#27AE60',
-  },
-  navText: {
-    fontSize: 10,
-    color: '#8E8E93',
-  },
-  navTextActive: {
-    fontSize: 10,
-    color: '#27AE60',
-    fontWeight: '500',
   },
 });

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import * as Clipboard from 'expo-clipboard';
@@ -43,7 +44,7 @@ export default function SensoresScreen({ navigation, route }) {
     return 'Normal';
   };
 
-  const carregarDados = async () => {
+  const carregarDados = useCallback(async () => {
     if (carregandoRef.current) return;
     carregandoRef.current = true;
 
@@ -64,7 +65,7 @@ export default function SensoresScreen({ navigation, route }) {
 
       const [respDispositivos, respLeituras] = await Promise.all([
         fetch(`${API_URL}/devices/me?fazenda=${fazendaId}`, { headers }),
-        fetch(`${API_URL}/leituras/me`, { headers }),
+        fetch(`${API_URL}/leituras/me?fazenda=${encodeURIComponent(fazendaId)}`, { headers }),
       ]);
 
       const dataDispositivos = await respDispositivos.json().catch(() => ({}));
@@ -110,13 +111,15 @@ export default function SensoresScreen({ navigation, route }) {
       carregandoRef.current = false;
       setLoading(false);
     }
-  };
+  }, [fazendaId, fazendaNome]);
 
-  useEffect(() => {
-    carregarDados();
-    const interval = setInterval(carregarDados, 30000);
-    return () => clearInterval(interval);
-  }, [fazendaId]);
+  useFocusEffect(
+    useCallback(() => {
+      carregarDados();
+      const intervalo = setInterval(carregarDados, 30000);
+      return () => clearInterval(intervalo);
+    }, [carregarDados]),
+  );
 
   const confirmarExclusao = async (dispositivo) => {
     try {

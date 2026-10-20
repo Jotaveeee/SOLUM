@@ -3,7 +3,6 @@ import {
     View,
     TouchableOpacity,
     Image,
-    ActivityIndicator,
     TextInput,
     KeyboardAvoidingView,
     ScrollView,
@@ -11,7 +10,6 @@ import {
 } from 'react-native';
 
 import styles from './styles';
-import { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from "@react-navigation/native";
 

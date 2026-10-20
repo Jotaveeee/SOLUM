@@ -337,18 +337,12 @@ export default StyleSheet.create({
   },
 
   modalOverlay: {
-  flex: 1,
-  backgroundColor: 'rgba(0, 0, 0, 0.55)',
-  justifyContent: 'flex-end',
-},
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    justifyContent: 'flex-end',
+  },
 
-modalOverlay: {
-  flex: 1,
-  backgroundColor: 'rgba(0, 0, 0, 0.25)',
-  justifyContent: 'flex-end',
-},
-
-modalContainer: {
+  modalContainer: {
   backgroundColor: '#FFFFFF',
   borderTopLeftRadius: 24,
   borderTopRightRadius: 24,
@@ -356,20 +350,20 @@ modalContainer: {
   paddingBottom: 30,
 },
 
-modalTitulo: {
+  modalTitulo: {
   color: '#1A1A1A',
   fontSize: 20,
   fontWeight: '700',
   marginBottom: 6,
 },
 
-modalDescricao: {
+  modalDescricao: {
   color: '#777777',
   fontSize: 14,
   marginBottom: 20,
 },
 
-modalOpcao: {
+  modalOpcao: {
   flexDirection: 'row',
   alignItems: 'center',
   paddingVertical: 16,
@@ -377,17 +371,13 @@ modalOpcao: {
   borderBottomColor: '#E8E8E8',
 },
 
-modalIcone: {
-  width: 40,
-},
-
-modalTexto: {
+  modalTexto: {
   color: '#1A1A1A',
   fontSize: 16,
   fontWeight: '500',
 },
 
-modalCancelar: {
+  modalCancelar: {
   alignItems: 'center',
   marginTop: 18,
   paddingVertical: 14,
@@ -395,7 +385,7 @@ modalCancelar: {
   backgroundColor: '#249057',
 },
 
-modalCancelarTexto: {
+  modalCancelarTexto: {
   color: '#FFFFFF',
   fontSize: 15,
   fontWeight: '600',

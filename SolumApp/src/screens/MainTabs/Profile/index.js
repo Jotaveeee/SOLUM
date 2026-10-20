@@ -300,24 +300,6 @@ export default function Perfil({ navigation }) {
         </View>
       </Modal>
 
-      <View style={styles.bottomNav}>
-        <View style={styles.navItem}>
-          <Text style={styles.navIcon}>🏠</Text>
-          <Text style={styles.navText}>Início</Text>
-        </View>
-        <View style={styles.navItem}>
-          <Text style={styles.navIcon}>📡</Text>
-          <Text style={styles.navText}>Sensores</Text>
-        </View>
-        <View style={styles.navItem}>
-          <Text style={styles.navIcon}>🔔</Text>
-          <Text style={styles.navText}>Alertas</Text>
-        </View>
-        <View style={styles.navItemActive}>
-          <Text style={styles.navIconActive}>👤</Text>
-          <Text style={styles.navTextActive}>Perfil</Text>
-        </View>
-      </View>
     </SafeAreaView>
   );
 }

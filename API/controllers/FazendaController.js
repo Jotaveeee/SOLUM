@@ -22,13 +22,6 @@ class FazendaController {
                 usuario: req.user._id
             });
     
-            if (fazendas.length === 0) {
-    
-                return res.status(404).json({
-                    message: "Nenhuma fazenda encontrada."
-                });
-            }
-    
             return res.status(200).json({
     
                 fazendas: fazendas.map(

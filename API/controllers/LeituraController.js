@@ -106,9 +106,15 @@ class LeituraController {
         try {
 
             // Busca todos os dispositivos do usuário logado
-            const dispositivos = await Dispositivo.find({
-                usuario: req.user._id
-            }).select("_id").lean();
+            const filtroDispositivos = { usuario: req.user._id };
+            if (req.query.fazenda) {
+                if (!mongoose.isValidObjectId(req.query.fazenda)) {
+                    return res.status(400).json({ message: "Fazenda inválida." });
+                }
+                filtroDispositivos.fazenda = req.query.fazenda;
+            }
+
+            const dispositivos = await Dispositivo.find(filtroDispositivos).select("_id").lean();
 
             // Pega somente os IDs dos dispositivos
             const dispositivosIds = dispositivos.map(
@@ -119,7 +125,7 @@ class LeituraController {
             const leituras = dispositivosIds.length
                 ? await Leitura.aggregate([
                     { $match: { dispositivo: { $in: dispositivosIds } } },
-                    { $sort: { createdAt: -1, _id: -1 } },
+                    { $sort: { dispositivo: 1, createdAt: -1, _id: -1 } },
                     { $project: { dispositivo: 1, createdAt: 1, temperatura: 1, umidadeSolo: 1, bateria: 1 } },
                     { $group: { _id: "$dispositivo", leitura: { $first: "$$ROOT" } } },
                     { $replaceRoot: { newRoot: "$leitura" } }

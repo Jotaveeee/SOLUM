@@ -42,6 +42,8 @@ export default function Start() {
         setFontsLoaded(true);
       } catch (error) {
         console.error('Erro ao carregar fontes:', error);
+        // Usa as fontes padrão do sistema se as fontes personalizadas falharem.
+        setFontsLoaded(true);
       }
     }
 
