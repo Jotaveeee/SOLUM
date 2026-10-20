@@ -18,6 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
 
 import { API_URL } from '../../services/api';
+import PasswordInput from '../../components/PasswordInput';
 
 export default function Register() {
 
@@ -221,13 +222,11 @@ export default function Register() {
                 Senha
               </Text>
 
-              <TextInput
-                style={styles.input}
+              <PasswordInput
+                inputStyle={styles.input}
                 value={senha}
                 onChangeText={(texto) => setSenha(texto.replace(/\s/g, ''))}
                 placeholder="Digite sua senha"
-                secureTextEntry
-                autoCapitalize="none"
                 maxLength={20}
               />
 

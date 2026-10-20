@@ -3,6 +3,7 @@ const Fazenda = require("../models/Fazenda");
 const crypto = require("crypto");
 const mongoose = require("mongoose");
 const Leitura = require("../models/Leitura");
+const AlertaResolvido = require("../models/AlertaResolvido");
 
 class DeviceController {
 
@@ -184,6 +185,10 @@ class DeviceController {
 
             // remove as leituras e dispositivo
             await Leitura.deleteMany({ dispositivo: dispositivo._id });
+            await AlertaResolvido.deleteMany({
+                usuario: req.user._id,
+                dispositivo: dispositivo._id
+            });
             await dispositivo.deleteOne();
 
             return res.status(200).json({ message: "Dispositivo removido com sucesso." });

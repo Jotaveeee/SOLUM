@@ -40,16 +40,30 @@ class AuthController {
     return emailRegex.test(email);
 }
 
+    validarNome(nome) {
+        return typeof nome === "string"
+            && nome.trim().length > 0
+            && nome.trim().length <= 20
+            && /^[a-zA-ZÀ-ÿ\s]+$/.test(nome.trim());
+    }
+
     async register(req, res) {
 
         try {
 
             const { nome, email, senha } = req.body;
+            const nomeLimpo = typeof nome === "string" ? nome.trim() : "";
 
             // Verifica campos obrigatórios
             if (!nome || !email || !senha) {
                 return res.status(400).json({
                     message: "Preencha todos os campos."
+                });
+            }
+
+            if (!this.validarNome(nomeLimpo)) {
+                return res.status(400).json({
+                    message: "O nome deve conter apenas letras e espaços e ter no máximo 20 caracteres."
                 });
             }
 
@@ -97,7 +111,7 @@ class AuthController {
 
             // Cria o usuário
             const usuario = await Usuario.create({
-                nome,
+                nome: nomeLimpo,
                 email,
                 senha: senhaHash
             });
@@ -203,21 +217,9 @@ class AuthController {
         try {
             const nome = typeof req.body.nome === "string" ? req.body.nome.trim() : "";
 
-            if (!nome) {
+            if (!this.validarNome(nome)) {
                 return res.status(400).json({
-                    message: "Informe um nome válido."
-                });
-            }
-
-            if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(nome)) {
-                return res.status(400).json({
-                    message: "O nome pode conter apenas letras e espaços."
-                });
-            }
-
-            if (nome.length > 20) {
-                return res.status(400).json({
-                    message: "O nome deve ter no máximo 20 caracteres."
+                    message: "O nome deve conter apenas letras e espaços e ter no máximo 20 caracteres."
                 });
             }
 

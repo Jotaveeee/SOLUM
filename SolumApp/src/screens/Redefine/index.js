@@ -3,7 +3,6 @@ import {
     View,
     TouchableOpacity,
     Image,
-    TextInput,
     KeyboardAvoidingView,
     ScrollView,
     Platform,
@@ -12,6 +11,7 @@ import {
 import styles from './styles';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from "@react-navigation/native";
+import PasswordInput from '../../components/PasswordInput';
 
 export default function Redefine() {
     const navigation = useNavigation();
@@ -45,10 +45,9 @@ export default function Redefine() {
                                 Nova senha
                             </Text>
 
-                            <TextInput
-                                style={styles.input}
-                                keyboardType="email-address"
-                                autoCapitalize="none"
+                            <PasswordInput
+                                inputStyle={styles.input}
+                                placeholder="Digite a nova senha"
                             />
                         </View>
 
@@ -57,9 +56,9 @@ export default function Redefine() {
                                 Digite novamente
                             </Text>
 
-                            <TextInput
-                                style={styles.input}
-                                secureTextEntry
+                            <PasswordInput
+                                inputStyle={styles.input}
+                                placeholder="Digite novamente"
                             />
                         </View>
 

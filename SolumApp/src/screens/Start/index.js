@@ -20,6 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import { API_URL } from '../../services/api';
 import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
+import PasswordInput from '../../components/PasswordInput';
 
 export default function Start() {
   const navigation = useNavigation();
@@ -228,15 +229,13 @@ export default function Start() {
                 Senha
               </Text>
 
-              <TextInput
-                style={styles.input}
+              <PasswordInput
+                inputStyle={styles.input}
                 value={senha}
                 onChangeText={(texto) =>
                   setSenha(texto.replace(/\s/g, ''))
                 }
                 placeholder="Digite sua senha"
-                secureTextEntry
-                autoCapitalize="none"
                 maxLength={20}
               />
             </View>

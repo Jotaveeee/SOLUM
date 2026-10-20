@@ -2,6 +2,7 @@ const Fazenda = require("../models/Fazenda");
 const mongoose = require("mongoose");
 const Dispositivo = require("../models/Dispositivo");
 const Leitura = require("../models/Leitura");
+const AlertaResolvido = require("../models/AlertaResolvido");
 
 class FazendaController {
 
@@ -63,6 +64,10 @@ class FazendaController {
 
             // ordem: leituras → dispositivos → fazenda
             await Leitura.deleteMany({ dispositivo: { $in: ids } });
+            await AlertaResolvido.deleteMany({
+                usuario: req.user._id,
+                dispositivo: { $in: ids }
+            });
             await Dispositivo.deleteMany({ _id: { $in: ids } });
             await fazenda.deleteOne();
 
