@@ -481,7 +481,7 @@ export default function SensorDetalhes({ route, navigation }) {
               </Text>
 
               <Text style={styles.subtitulo}>
-                SoloSync
+                SolumSensor
               </Text>
             </View>
 

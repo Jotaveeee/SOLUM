@@ -317,7 +317,7 @@ export default function SensoresScreen({ navigation, route }) {
         </View>
 
         <View style={styles.titleContainer}>
-          <Text style={styles.titulo}>SoloSyncs</Text>
+          <Text style={styles.titulo}>SolumSensors</Text>
           <Text style={styles.subtitulo}>
             Acompanhe os dados dos sensores instalados na fazenda
           </Text>
