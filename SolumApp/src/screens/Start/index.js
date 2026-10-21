@@ -217,6 +217,7 @@ export default function Start() {
                   setEmail(texto.replace(/\s/g, ''))
                 }
                 placeholder="Digite seu email"
+                placeholderTextColor="#4A4A4A"
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}

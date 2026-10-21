@@ -11,12 +11,18 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE"
-      }
+      },
+      "package": "com.iagocampos.SolumApp"
     },
     "plugins": [
       "expo-font",
       "expo-secure-store",
       "expo-mail-composer"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "4e3d43a5-87ad-4383-afdb-29e85e7dc8f3"
+      }
+    }
   }
 }

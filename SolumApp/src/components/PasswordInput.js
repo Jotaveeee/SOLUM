@@ -13,6 +13,7 @@ export default function PasswordInput({
     <View style={[styles.container, containerStyle]}>
       <TextInput
         {...inputProps}
+        placeholderTextColor={inputProps.placeholderTextColor ?? '#4A4A4A'}
         style={[inputStyle, styles.input]}
         secureTextEntry={!senhaVisivel}
         autoCapitalize="none"
